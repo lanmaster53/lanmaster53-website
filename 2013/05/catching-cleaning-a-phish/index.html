@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>Catching and Cleaning a Phish</h2>
+<h5>Thursday, May 23, 2013</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>This afternoon my wife looked up from her laptop and said to me, "You're gonna be proud of me. I just got phished (see image below). However, after clicking the link and seeing that it was asking me for my username and password, I logged into my Twitter account manually to see if the email was legit. It wasn't, so I deleted the email." While she thought that I should have been proud, I had obviously failed at explaining the risks of phishing attacks and it was time to dust off some incident response skills.</p>
+<!-- READMORE -->
+
+<p>My wife helps run her fathers company, so she handles most of the business email that the company receives. As a result, she received the following email.</p>
+<p><a href="/static/images/posts/tpwitter_phish.png"><img alt="" src="/static/images/posts/tpwitter_phish.png" /></a></p>
+<p>Looks pretty legit, right? You can't see it here, but the "from" address seems legit, and the links go to exactly where they say they're going. The trick here is that the attacker is using a URL shortener to obfuscate the final destination of the link. This is a good technique, as Twitter users are accustomed to seeing shortened URLs.</p>
+<p>My wife did the right thing by manually going to twitter to see if she actually did receive a Direct Message, but not until after she clicked the link. Many people think that clicking links and visiting pages is okay as long as they don't enter credentials into untrusted pages. This is not the case. By merely visiting a web page, attacks can be launched against all sorts of client side technologies i.e. Java, Flash, the browser itself, etc. How each of these attacks work is out of the scope of this article. The point is, if someone clicks a link or visits a page which is hosting malicious content, they could be in trouble. Here is what the phishing site my wife encountered looks like.</p>
+<p><a href="/static/images/posts/tpwitter_site.png"><img alt="" src="/static/images/posts/tpwitter_site.png" /></a></p>
+<p>What's wrong with this picture?</p>
+<p>As the defender of the network, I was glad that my user did not surrender credentials, but as I mentioned above, the possibility still exists that the site is hosting malware and my user's system could be infected. Is it too late? Has the damage already been done? Let's find out by taking some response actions.</p>
+<p>The first step is safely acquiring a copy of the email. According to my good friend <a href="https://twitter.com/MalwareJake">Jake Williams</a>, the best way to do this is to extract the email in plain text directly from the PST where the message is stored on the local machine, or from the mail server via POP/IMAP. If the email is stored on a 3rd party mail server, this can be done using the affected user's credentials. Otherwise, the mail server administrator should have the ability to extract a copy of the email from the mail store. I acquired a copy by having the user forward me the email. This is not the preferred method, as sometimes header information is lost when emails are forwarded.</p>
+<p>The second step is to conduct an analysis of the email. Some questions that need to be answered are:</p>
+<ul>
+<li>Where did the email come from?</li>
+<li>Are there embedded links?</li>
+<li>Where do the links go?</li>
+<li>Which links were clicked?</li>
+<li>What other users clicked the links according to traffic logs?</li>
+</ul>
+<p>Since I'm dealing with a one user environment, getting these answers was simple.</p>
+<p>The next step is to analyze the target site's invocation process and contents for signs of malicious activity. Website analysis in a safe manner used to be painful. One would have to build a customized sandboxed environment complete with IDS, exploitable client side technologies, etc. However, thanks to the fine folks at <a href="http://urlquery.net/">URLQuery.net</a>, all of these things are now available to us pain free.</p>
+<p>URLQuery.net is a malicious web page analysis tool. It runs the contents of the given page through the proverbial "wringer". URLQuery.net loads web pages through two different Intrusion Detection Systems with commercial rule sets (Suricata and Snort), executes the content intended for client side technologies such as JavaScript, Java and Adobe Reader, and provides a detailed report on the results, including traffic analysis. The results for the page in question can be seen below. The level of information given is incredible. Take a few moments to analyze the report.</p>
+<p><a href="/static/images/posts/tpwitter_urlquery.png"><img alt="" src="/static/images/posts/tpwitter_urlquery.png" /></a></p>
+<p>As you can see, there isn't much danger on this site other than the fact that someone from Russia is trying to harvest Twitter credentials. Granted, there could be 0-day exploits embedded, but as far as we can see as first responders, things seem clean for now. Disaster averted.</p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2018 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>

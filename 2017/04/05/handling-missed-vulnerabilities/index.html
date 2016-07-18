@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>Handling Missed Vulnerabilities</h2>
+<h5>Wednesday, April  5, 2017</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>(Originally posted at <a href="https://nvisium.com/blog/2017/04/05/handling-missed-vulnerabilities/">https://nvisium.com/blog/2017/04/05/handling-missed-vulnerabilities/</a>.)</p>
+<p><a href="https://twitter.com/digininja">Robin "digininja" Wood</a> wrote <a href="https://digi.ninja/blog/missing_a_vuln.php">this</a> interesting article about the impact of missing vulnerabilities during security assessments. He makes a lot of good points, and the reality is, it's something we all deal with. Robin talks about how missing a vulnerability can be the end of one's career, or at least a large step backward. While this is true, his article only addresses the impact at a micro level. I'd like to expand on that.</p>
+<!-- READMORE -->
+
+<p>As the Managing Consultant of a growing Application Security Consulting practice, this issue takes on a much larger form. We are no longer talking about one person's career. We are talking about an entire organization on whom employees' livelihood rely. Missing a vulnerability at this level can have some major consequences that affect a lot more than the offending consultant.</p>
+<p>But it's going to happen. It's not a matter of if, but when. So it's important to be prepared when something like this does happen. As someone that has put a good bit of thought into this issue due to my position at nVisium, I've compiled my thoughts on the issue from prevention to reaction. These thoughts cover various hypothetical examples, attempt to identify the root problem, and discuss solutions to help rectify the situation.</p>
+<h3>Scenarios</h3>
+<p>The most probable scenario that could lead to missed vulnerabilities is retesting an application that the same consultancy has tested previously. Most good consultancies understand that there is value in rotating consultants for portfolio clients, but there is also risk. No two consultants are the same. Strengths, weaknesses, techniques, and tool sets vary, and with that, the results of their respective assessments. While those that employ this technique see this as a benefit to the client, if the consultant that tested most recently finds something that existed for a previous test but was overlooked, the client is more than likely not going to be thrilled about it, especially if it was something simple. The spectrum of response here is large as there is a significant difference between missing something during a black box assessment that gets picked up by an SCA tool vs. missing something via black box assessment that results in a major breach, but none of the possible outcomes are desireable. This is the scenario that most often leads to the uncomfortable discussion of the client attempting to govern which consultant is allowed to work on their assessments moving forward. I've heard stories of this going as far as direct threats to end all future work unless the consultant was terminated from employment. I can't imagine this is a comfortable position to be in.</p>
+<p>While not the most common, the most damaging scenario is when the security assessment is the first step in the implementation of a bug bounty program. If you think it is bad having one of your own consultants find something that another one of your consultants missed, imagine a client having to pay a bug bounty for a vanilla vulnerability that one of your consultants missed. These are resume generating events.</p>
+<h3>Framing the Problem</h3>
+<p>There are four main reasons for encountering these scenarios and others like them: time, effort, aptitude, and methodology. The TEAM acronym was a complete accident, but works out pretty darn perfectly.</p>
+<h4>Time</h4>
+<p>Time is the thing that most restricts security assessments, and is the biggest difference between testers and the threats they attempt to replicate. In most cases, testers don't have the same amount of time as the threat, so time becomes a variable that is considered with varying levels of information in an attempt to most accurately represent the threat in a reduced period of time. Let's face it. No one wants to pay enough to truly replicate the threat.</p>
+<p>All of these variables come into play during a process called scoping. Scoping is an extremely important part of the assessment planning process, as it is a key component to providing consultants with enough time to complete an engagement. If a conslultant is given too little time, then corners are cut, full coverage is not achieved, and we've introduced an opportunity for inconsistency.</p>
+<p>There are a lot of things to consider when scoping.</p>
+<p>Higher level assets (senior consultants, etc.) are faster than lower level assets (junior consultants, etc.). Low level assets will have to conduct more research on tested components, tools, etc. in order to sufficiently do the job. In fact, so much of what testers do at every level is largely on-the-job self-training. I don't know about you, but I hire based on a candidate's capacity to learn over what they already know. However, there is always a learning curve that must be considered when scoping an engagement in order to ensure full coverage.</p>
+<p>Threat replication is a different kind of test than bug hunting. Depending on what kind of consulting the tester specializes in, they're either threat focused, or vulnerablity focused. To be vulnerablity focused is to focus on finding every possible vulnerability in a target. To be threat focused is to focus on replicating a very specific threat and only try to find what is needed to accomplish the determined goal of the replicated threat. The focus obviously has a huge impact on the amount of time required to complete the engagement, and the accuracy at which one can scope the engagement. When focusing on bugs, there are static metrics that can be analyzed to determine the size of the target: lines of code, dynamic pages, APIs, etc. Threat focused testing is much more subjective, as until you encounter something that gets you to the next level, you don't know how long it's going to take to get there.</p>
+<p>Budget is often the most important factor in scoping, even though in many cases it is an unknown to the person doing the scoping. Quite often, a client's eyes are bigger than their wallet, and once they get a quote, they begin discussing ways to reduce the price of the engagement. While this is perfectly fine, and most of us would do it if we were in their shoes as well, consultancies have to be very careful not to obligate themselves to a full coverage assessment in a time frame that is unrealistic.</p>
+<p>When cost isn't the determining factor that leads to over-obligation, it's client deadlines. You want to help your client, but they need it done by next week and it's easily a three week engagement. Be careful of this pitfall. There are solutions to helping the client without introducing opportunities for inconsistency. Keep reading.</p>
+<p>The bottom line is, the consultant performing the engagement must have enough time to complete it in accordance with the terms of the contract. If the contract says "best effort", then pretty much any level of completion meets the standard. Otherwise, the expectation is full coverage for the identified components. Without enough time, you can be sure some other consultant, internal or extenal, is going to eventually follow up with a full coverage assessment that find something the previous consultant missed.</p>
+<p>Addressing the "time" problem begins with refining the scoping process. This requires good feedback from consultants and tracking. Consultancies need to know when something is underscoped, overscoped, and why, and the only way to do this is to gather metrics about the timing of engagements from raw data sources, and from the consultants doing the work. When client budget is affecting the scope, consider recommending a "best effort" engagement, or an assessment that focuses on the specific components that are most important to the client. If a client has a hard deadline, consider leveraging more resources over a shorter period of time in order to meet their goal. There are always options, but the bottom line is to prevent the possibility of inconsistencies by making sure consultants have adequate time to meet contract requirments.</p>
+<h4>Effort</h4>
+<p>Effort is a personal responsibility. If a consultant doesn't put in the expected quantity of work to complete the job as scoped, but bills for the same, then not only will this introduce the opportunity for inconsistency, but the consultant is essentially stealing from the client on behalf of the consultancy. This is a serious offense with no easy solution. So much of what indicates a person's sustained level of effort comes from maturity and work ethic. Identifying these is something consultancies should do during the candidacy stage of the employment process.</p>
+<p>Another aspect of effort is how consultants approach deliverables. It's no secret. Most consultants don't enjoy writing deliverables. Regardless, deliverables are the one thing left with the client when the consultant finishes an engagement. It provides the lasting impression that the client will have of the consultant, and more importantly, the consultancy. However, every so often consultants take shortcuts to reduce the time it takes to create a deliverable. This always leads to lower quality product and opportunities for inconsistency. Consultants must assume that the next consultant to see this target is going to put the requisite effort into the deliverable. The bottom line is, report everything. Whether the consultant uses paragraphs, bullets, or tables, if they discovered 30 instances of XSS, they need to report all 30 of them in the deliverable. They shouldn't just say, "We determined this to be systemic, so fix everywhere." This is poor quality consulting. It's ok to say things are systemic and that there may be other instances not found for one reason or another, but if the consultant found 30 instances, they need to pass that information to the client. They paid for it. Another common deliverable shortcut is grouping vulnerabilities by type without proper delineation. User Enumeration in a login page is very different from User Enumeration in a registration page, and recommendations for how to remediate these issues are completely different. If a consultant lumps all instances of User Enumeration into one issue and doesn't clearly delineate between the specific issues, then the consultant isn't putting in the required level of effort to prevent inconsistencies with future engagements.</p>
+<p>Effort isn't an issue that can be addressed through administrative or technical controls. Effort comes from who someone is, their work ethic, and their level of passion toward the task at hand. Unfortunately, passion and work ethic isn't something that can be taught at this point in life, and if this is the issue, then the only option may be parting ways. This is why it is important to have a good vetting process for employment candidates to ensure that candidates exhibit the qualities indicative of someone who will provide the level of effort desired.</p>
+<h4>Aptitude</h4>
+<p>A lack of aptitude is often mistaken for a lack of effort. The reality is that some people are just more gifted than others, and all consultants can't be held to the same standard. While certainly not always the case, skill level is quite often related to the quantity of experience in the field. It's why we have Junior, Mid-level, Senior, and Principal level consultants. As mentioned previously, a Junior consultant cannot be expected to accomplish as much as a Senior consultant in the same amount of time. The Junior will require more time to research the target components, tools, techniques, etc. required to successfully complete the engagement. While this is a scoping consideration, it's also a staffing consideration. There is a higher margin on low level consultants. They cost less per hour, so they are more profitable on an hourly basis when the rate charged to the client is the same as a consultant senior to them. A stable of capable Junior consultants can be quite profitable, but can also introduce inconsistency.</p>
+<p>Depending on the consultancy's strategic vision, there are a couple of approaches to solving the issue of aptitude. Many consultancies will try to avoid the issue all together by employing nothing but Senior level consultants or above. This is typical in small organizations with a high operational tempo and not enough resources to develop Junior consultants. These consultancies are basically throwing money at the problem. Their margin will be much lower, but they'll be able to maintain a higher operational tempo and incur less risk to testing inconsistencies related to skill. Another approach is a program to develop Junior consultants in an effort to increase margin and reduce the risk to testing inconsistencies over time. A great way to approach Junior consultant development is by pairing them up with consultants senior to them on every engagement. That way, they'll have constant leadership and someone they can lean on for mentorship on a constant basis. This allows the consultancy to get through engagements in a shorter time span due to having multiple assets assigned, but the scope of the project should consider the learning curve of the Junior consultant. In many cases, the increased speed of the senior asset will counter the slower speed of the junior asset, reducing the impact on the scoping process.</p>
+<p>Regardless of the approach, consultancies should empower their consultants to cross train and knowledge share on a constant basis. Something we've done at nVisium is to conduct bi-monthly lunch-and-learns. These are informal presentations of something related to the field from one consultant to the rest of the team. This serves two purposes. For senior consultants, it is an opportunity to share something new or unknown to junior level consultants. For junior consultants, it is an opportunity to professionally develop on a consistent basis, as each consultant rotates through. An added benefit for juniors is that there are few things that motivate someone to become a subject matter expert on a topic more than committing to presenting on that topic to a group of their peers. It is surprisingly affective, and the reason I write articles and present at conferences to this day.</p>
+<p>Another thing we do at nVisium is cultivate a highly collaborative environment via tools like Slack. So much so, that rarely does it feel like consultants are working on engagements alone. It is quite common to see code snippets and theory being tossed around and more than a handful of people sharing ideas about something encountered on an app only one of them is assigned to. This hive mind approach is not only highly affective in finding the best way forward for specific issues, but provides a great opportunity for Junior consultants to ask questions, receive clarification, and learn from their peers. It also attacks consistency at it's core as these events usually result in a public determination of where the organization stands on the issue and becomes an established standard moving forward. Everyone is involved, so everyone is aware.</p>
+<h4>Methodology</h4>
+<p>This is where I see consultants at all levels mess up more than anywhere else. Everyone thinks they're too good for methodology until someone else finds something new while following the methodology on the same application. The testing methodologies we use in Information Security today are proven. They work by laying the framework to maximize the time given to accomplish the task while providing a baseline level of analysis. I've seen consultants blow off methodology and one of two things happens: they spend all their time chasing phantom vulnerabilities (also known as "rabbit holes" and "red herrings") and fail to make full coverage, or think they have full coverage only to realize they missed multiple vanilla vulnerabilites when someone else tested the same target at a later time. In either case, an opportunity for inconsistency is introduced because it's is not a matter of if someone will follow with proper methodology, it's a matter of when.</p>
+<p>Addressing this is about finding a balance between controlling the assessment process and allowing testers to exercise creative freedom. I am a firm believer in not forcing consultants to test in a confined environment by requiring them to use a checklist. Many of today's most critical vulnerabilities exist in business logic. Discovering vulnerabilities in how the application enforces logical controls to business processes requires a creative approach. Forcing consultants to use a checklist robs them of their creativity, reducing the likelihood of them actually testing outside of the items on the checklist. Since logic vulnerabilities are specific to the business process, they can't be checklist items. So while checklist testing is a good way to ensure a higher level of consistency, it leads to a consistent product lacking quality and completeness.</p>
+<p>At nVisium we've developed what we call a "testing guide." What makes our guide different from a checklist is that the guide is merely a series of questions about the application. How testers answer the questions is up to them. They can use their own techniques and their own tool set. The idea is that through answering each of the questions within the guide, the tester will have exercised the application in its entirety and maximized the likelihood of identiying all vulnerabilities. Including business logic flaws. This guide is not a deliverable, and it's not something that supervisors check for. It's a tool at the disposal of the consultant, and each consultant knows that the others are using it, so the system is self-policing.</p>
+<h3>The Inevitable</h3>
+<p>Even with all of this in place, someone is going to miss something. And when they do, the organization must conduct damage control. Damage control measures are largely going determined by how the client reacts to the issue. It is purely reactionary at this point by all parties. However, thinking through possible scenarios as a staff and "wargaming" these situations will better prepare the team for the inevitable.</p>
+<p>I'm a firm believe in owning your mistakes. I have way more respect for people that make mistakes and own them, than I do for folks that claim they never make any mistakes. Do you know what you call someone that never seems to be at fault for anything because they don't make mistakes? Dishonest. These individuals and the organizations they represent are immediately tagged as untrustworthy. We're in an industry where trust is the cornerstone of everything we do. Our clients entrust us with their intellectual property; the heart and soul of their businesses. Their livelihood. If we can't be trusted, we won't stay in business very long. Organizations and individuals alike must own their mistakes.</p>
+<p>After owning the mistake, the organization needs to make it right. Once again, this depends on what the issue is, but remember that the issue is not in a vacuum. So someone missed a small issue during a small assessment for a small client. One might feel inclined to let it go. Don't forget that our industry is small, and word travels fast. There's far too much risk in not doing the right thing here folks.</p>
+<p>The organization must accept the fact that sometimes making it right won't be enough. Clients pay consultancies a lot of money and expect a quality product. If the consultancy fails to deliver, the client has every right to find someone else that will, and the consultancy shouldn't be surprised if they do. In a perfect world, clients would understand our line of work and the difficulty in ensuring 100% consistency, but you don't need me to tell you this isn't a perfect world.</p>
+<h3>Wrapping Up</h3>
+<p>So it's going to happen, and someone is going to be dealing with the fallout. Chances are it won't be comfortable, but if the organization has implemented controls to reduce the frequency, and prepared themselves for occassions where the controls fail, they'll be equipped and prepared to limit the damage and ultimately live to test another day.</p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2018 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>

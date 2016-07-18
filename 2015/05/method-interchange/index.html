@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>Method Interchange: The Forgotten Vulnerability</h2>
+<h5>Tuesday, May 12, 2015</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>(Originally posted at <a href="https://nvisium.com/blog/2015/05/12/method-interchange-forgotten/">https://nvisium.com/blog/2015/05/12/method-interchange-forgotten/</a>.)</p>
+<p>When you think of the most prolific scorers in NBA history, you think of names like Kareem Abdul-Jabbar, Bill Russell, and Karl Malone. Most casual basketball fans aren't familiar with names like Oscar Robertson, Bob Cousy, or John Stockton, but without these men, the previously mentioned scorers would have been much less effective as an offensive threat. And thus is the life of the Method Interchange vulnerability.</p>
+<!-- READMORE -->
+
+<p>I've mentioned Method Interchange in several application security circles recently and have been greeted with strange looks and questions of "Method what?". Once I explained Method Interchange, the reaction changed from "huh?" to, "Oh my, I need to check for that from now on!" Quite simply, Method Interchange is the ability to send parameters via the URI query string or request payload and have them processed by the application regardless of which was originally intended. While seemingly benign, as we'll see later in the article, Method Interchange drastically increases the exploitability of other, more capable, attacks.</p>
+<h3>GET and POST Methods</h3>
+<p>The HTTP protocol specifies two traditional methods for passing parameters from a user-agent to a server. Parameters can be passed as name-value pairs within the URI query string, or as name-value pairs within the payload of the request. When parameters are passed in the URI query string, the request is typically sent using the <code>GET</code> method. When parameters are passed within the request payload, the request is typically sent using the <code>POST</code> method.</p>
+<ul>
+<li><code>GET</code></li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/resource.ext?name1=value1&amp;name2=value2</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">www.example.com</span>
+</pre></div>
+
+
+<ul>
+<li><code>POST</code></li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/resource.ext</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">www.example.com</span>
+
+name1=value1&amp;name2=value2
+</pre></div>
+
+
+<p>There are other methods for sending parameters to a server (alternate data formats such as XML and JSON, embedded in the structure of the URI as in RESTful services, other parts of an HTTP request such as custom headers), but here we are referring to the traditional methods provided by the HTTP protocol: <code>GET</code> and <code>POST</code>.</p>
+<h3>Method Interchange Manifested</h3>
+<p>Server frameworks will either store parameters in global arrays as they parse the request, or have method calls for pulling parameter data from the request object when needed. For example, PHP stores <code>GET</code> and <code>POST</code> parameters in the <code>$_GET</code> and <code>$_POST</code> global arrays as it parses each request. The <code>$_GET</code> array stores all of the parameters that were sent as part of the URI query string. The <code>$_POST</code> array stores all of the parameters that were sent in the request payload. When a developer expects data from the request payload, he uses the <code>$_POST</code> array to fetch it. When he expects data from the URI query string, he uses the <code>$_GET</code> array. What many security testers forget, or are unaware of, is that PHP, like many frameworks, also has the <code>$_REQUEST</code> array, which holds all parameters and values regardless of whether they were sent in the URI query string or as part of the request payload. It is the use of the <code>$_REQUEST</code> array and similar implementations that allows for Method Interchange.</p>
+<p>Below is an abbreviated list of methods and objects from several popular development frameworks that could allow for Method Interchange. With some of these frameworks, this is only one of multiple ways to introduce Method Interchange. And in some cases, vulnerability requires other conditions to exist.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Framework</th>
+<th align="left">Method/Object</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">PHP</td>
+<td align="left"><code>$_REQUEST</code></td>
+<td align="left">Array that contains <code>GET</code>, <code>POST</code>, and Cookie values.</td>
+</tr>
+<tr>
+<td align="left">Rails</td>
+<td align="left"><code>match</code></td>
+<td align="left">Routing method that allows for routing requests to multiple verbs e.g. <code>GET</code>, <code>POST</code>, etc.</td>
+</tr>
+<tr>
+<td align="left">Django</td>
+<td align="left"><code>HttpRequest.REQUEST</code></td>
+<td align="left">Dictionary that contains both <code>GET</code> and <code>POST</code> parameter values.</td>
+</tr>
+<tr>
+<td align="left">Flask</td>
+<td align="left"><code>Request.values</code></td>
+<td align="left">Dictionary that contains both <code>GET</code> and <code>POST</code> parameter values.</td>
+</tr>
+<tr>
+<td align="left">Spring MVC</td>
+<td align="left"><code>HttpServletRequest.getParameter()</code></td>
+<td align="left">Controller method that provides access to both <code>GET</code> and <code>POST</code> parameter values if the <code>@RequestMapping</code> annotation <code>method</code> paremeter is not set.</td>
+</tr>
+<tr>
+<td align="left">.NET</td>
+<td align="left"><code>HttpRequest.Params</code></td>
+<td align="left">Collection of <code>QueryString</code>, <code>Form</code>, <code>Cookies</code>, and <code>ServerVariables</code> items.</td>
+</tr>
+<tr>
+<td align="left">.NET MVC</td>
+<td align="left"><code>public ActionResult &lt;action&gt;(&lt;type&gt; &lt;name&gt;)</code></td>
+<td align="left">Configuration that binds parameters from all sources e.g. <code>GET</code>, <code>POST</code>, route, etc., to Action method parameters.</td>
+</tr>
+</tbody>
+</table>
+<h3>Discovery</h3>
+<p>Discovering Method Interchange is incredibly simple. First, identify a request and move the payload from the URI query string to the request payload or vice versa. Keep in mind that <code>POST</code> requests require a <code>Content-Type</code> header to function properly, so add/remove the necessary headers as needed. While this can be done manually, Burp Suite makes this incredibly easy through the "Change request method" context menu option (thanks <a href="https://twitter.com/mccabe615">Mike</a>).</p>
+<p><a href="/static/images/posts/method_interchange_burp_1.png"><img alt="" src="/static/images/posts/method_interchange_burp_1.png" /></a></p>
+<p><a href="/static/images/posts/method_interchange_burp_2.png"><img alt="" src="/static/images/posts/method_interchange_burp_2.png" /></a></p>
+<p><a href="/static/images/posts/method_interchange_burp_3.png"><img alt="" src="/static/images/posts/method_interchange_burp_3.png" /></a></p>
+<p>Then, fire off the request and analyze the response. If the response mirrors that of the original request, then the application is vulnerable to Method Interchange.</p>
+<h3>Exploitation: The Great Assist</h3>
+<p>So where does the assist analogy fit in to all of this? And so what if parameters can be sent in the URI query string or request payload interchangeably? ... Have you ever tried to conduct a Cross-Site Request Forgery (CSRF) attack that leveraged parameters sent in the request payload? How about a Cross-Site Scripting (XSS) attack? Or how about exploiting a Session Fixation vulnerability where the a session variable was sent in the request payload? If Method Interchange exists, then the CSRF and XSS attacks become much simpler, and Session Fixation vulnerabilities may become exploitable.</p>
+<p>Exploiting XSS in a <code>POST</code> parameter requires a GET-to-POST script on a 3rd party server, resulting in a suspicious link with which to exploit a user. Exploiting CSRF in a <code>POST</code> parameter requires embedding complex JavaScript into a 3rd party application, also resulting in a suspicious link. Method Interchange allows for a simple URL containing a XSS/CSRF payload to appear as a link to a trusted resource. Exploiting Session Fixation may not be possible when a session is sent via a <code>POST</code> parameter. Method Interchange allows an attacker to fixate a session via a simple URL that appears as a link to a trusted resource.</p>
+<h3>Remediation</h3>
+<p>Preventing Method Interchange is as simple as discovering it. Use methods, objects, etc. that explicitly provide values from the URI query string (<code>GET</code>) and request payload (<code>POST</code>). All popular frameworks are capable of preventing Method Interchange. Below are a few resources that address acquiring parameters from requests for an explicitely defined method.</p>
+<ul>
+<li>Rails - <a href="http://guides.rubyonrails.org/routing.html">Rails Routing from the Outside In</a></li>
+<li>Django - <a href="https://docs.djangoproject.com/en/1.8/ref/request-response/#django.http.HttpRequest.REQUEST">Request and Response Objects</a></li>
+<li>Spring MVC - <a href="http://www.codejava.net/frameworks/spring/14-tips-for-writing-spring-mvc-controller#RequestParam">Mapping Request Parameters to Handler Method</a></li>
+</ul>
+<p>Parameter binding is the recommended approach for accessing parameter values of an explicitely defined method. However, .NET MVC is only vulnerable to Method Interchange when using parameter binding. Binding parameters in .NET MVC without a <code>AcceptVerbsAttribute</code> decorator causes the framework to search all parameter sources (query string, request payload, route data, etc.) for a matching parameter name. .NET MVC is otherwise immune.</p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/1073692/what-are-the-actionresult-acceptverbsattribute-default-http-methods">http://stackoverflow.com/questions/1073692/what-are-the-actionresult-acceptverbsattribute-default-http-methods</a></li>
+<li><a href="https://bubblogging.wordpress.com/2011/12/31/mvc-data-request-controller/">https://bubblogging.wordpress.com/2011/12/31/mvc-data-request-controller/</a></li>
+</ul>
+<h3>Conclusion</h3>
+<p>So as you see, Method Interchange alone is rather harmless. But when combined with other vulnerabilities, Method Interchange provides the needed assist to drastically elevate the risk exposure of the vulnerability.</p>
+<h3>Update</h3>
+<h5>Thursday, May 14, 2015</h5>
+<p>I've had a few folks reach out with regards to the similarities between HTTP Verb Tampering and Method Interchange. Quite simply, Method Interchange is a subset of Verb Tampering. The difference is that Method Interchange is a result of how an application processes parameters, specifically related to the <code>GET</code> and <code>POST</code> methods, where Verb Tampering is a result of how the server and application apply access controls around all HTTP methods (verbs). Below is a great whitepaper describing Verb Tampering. It also addresses the concept of Method Interchange.</p>
+<ul>
+<li><a href="http://www.aspectsecurity.com/research-presentations/bypassing-vbaac-with-http-verb-tampering">Bypassing VBAAC with HTTP Verb Tampering</a></li>
+</ul>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2018 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>

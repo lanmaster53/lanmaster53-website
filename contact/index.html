@@ -7,63 +7,48 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" href="/css/normalize.css">
-        <link rel="stylesheet" href="/css/skeleton.css">
-        <link rel="stylesheet" href="/css/style.css">
-        <link rel="stylesheet" href="/pygments.css">
-        <link rel="shortcut icon" href="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e?s=16" />
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
     </head>
     <body>
         <div class="container">
             <div class="row">
                 <div class="four columns meta">
                     <ul>
-                        <li><a href="/"><img src="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
-                    
-                        <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/images/meta/bitbucket.png" /></a></li>
-                    
-                        <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/images/meta/github.png" /></a></li>
-                    
-                        <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/images/meta/youtube.png" /></a></li>
-                    
-                        <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/images/meta/twitter.png" /></a></li>
-                    
-                        <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/images/meta/linkedin.png" /></a></li>
-                    
-                        <li><a href="/contact/"><img src="/images/meta/email.png"></a></li>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
                     <ul>
-                    
-                        <li><a href="/projects/">Projects</a> | </li>
-                    
-                        <li><a href="/training/">Training</a> | </li>
-                    
-                        <li><a href="/archive/">Archive</a> | </li>
-                    
-                        <li><a href="/categories/">Categories</a> | </li>
-                    
-                        <li><a href="/about/">About</a></li>
-                    
-                    </ul>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/company/">Company</a> | </li>
+                                            <li><a href="/training/">Training</a> | </li>
+                                            <li><a href="/faq/">Faq</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
                 </div>
             </div>
             <!-- hr style="margin-top: 0;" -->
             <div class="row">
                 <div class="twelve columns">
-                    
-<h1>Contact</h1>
-
+                    <h1>Contact</h1>
                 </div>
             </div>
             <hr>
             <div class="row">
                 <div class="twelve columns">
-                    
-    
-        
-<h3>Secure Message</h3>
+                                <h3>Secure Message</h3>
 <p>Send me a PGP encrypted message. The message will be encrypted by your browser using the PGP public key available below.</p>
 <form>
     <div>
@@ -71,7 +56,7 @@
             <input type="radio" name="from" id="from1" value="timothy.tomes@gmail.com" checked> Personal
         </label>
         <label>
-            <input type="radio" name="from" id="from2" value="tim.tomes@nvisium.com"> nVisium
+            <input type="radio" name="from" id="from2" value="tim.tomes@practicalsecurity.services"> Business
         </label>
     </div>
     <div>
@@ -81,7 +66,7 @@
         <button type="submit" id="submit" onclick="return encrypt();">Send Message</button>
     </div>
     <div>
-        <button type="button" id="downlowd" onclick="window.location = '/downloads/pubkey.asc';">Download PGP Key</button>
+        <button type="button" id="downlowd" onclick="window.location = '/static/downloads/pubkey.asc';">Download PGP Key</button>
     </div>
 </form>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" type="text/javascript"></script>
@@ -95,7 +80,7 @@
         $("#message").attr("placeholder", "Your browser does not support secure messaging.");
     }
     // get the public key from the server
-    var key_path = "/downloads/pubkey.asc";
+    var key_path = "/static/downloads/pubkey.asc";
     var pub_key = '';
     $.get(key_path, function(data) {
         pub_key = data;
@@ -114,17 +99,14 @@
         return false;
     }
 </script>
-
-    
-
-                </div>
+                    </div>
             </div>
             <hr>
             <div class="row">
                 <div class="twelve columns">
                     <footer>
                         <p>
-                            &copy; 2016 Tim Tomes
+                            &copy; 2018 Tim Tomes
                             <span style="float: right;">
                                 powered by
                                 <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
@@ -142,6 +124,5 @@
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
     ga('create', 'UA-52269615-1', 'lanmaster53.com');
     ga('send', 'pageview');
-</script>
-    </body>
+</script>    </body>
 </html>
