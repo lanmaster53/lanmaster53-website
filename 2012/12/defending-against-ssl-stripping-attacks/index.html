@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/skeleton.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/pygments.css">
+        <link rel="shortcut icon" href="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                    
+                        <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/images/meta/bitbucket.png" /></a></li>
+                    
+                        <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/images/meta/github.png" /></a></li>
+                    
+                        <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/images/meta/youtube.png" /></a></li>
+                    
+                        <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/images/meta/twitter.png" /></a></li>
+                    
+                        <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/images/meta/linkedin.png" /></a></li>
+                    
+                        <li><a href="/contact/"><img src="/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                    
+                        <li><a href="/projects/">Projects</a> | </li>
+                    
+                        <li><a href="/training/">Training</a> | </li>
+                    
+                        <li><a href="/archive/">Archive</a> | </li>
+                    
+                        <li><a href="/categories/">Categories</a> | </li>
+                    
+                        <li><a href="/about/">About</a></li>
+                    
+                    </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    
+<h2>Defending Against SSL Stripping Attacks</h2>
+<h5>Tuesday, December  4, 2012</h5>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    
+<div class="content">
+    <p>SSL Stripping is an attack originally disclosed by Moxie Marlinspike (@moxie) at BlackHat DC 2009 along with a tool called SSLStrip. SSL Stripping is an attack that takes advantage of the fact that server-side redirects are used to redirect clients from HTTP versions of a page to the HTTPS, SSL encrypted, version. SSL Stripping tools, such as SSLStrip, listen for requests from clients that receive a response intended to redirect the client to a HTTPS resource. SSL Stripping tools hijack this response, make the SSL encrypted HTTPS connection to the server, convert all instances of "https" to "http" within the legitimate content, and pass the modified content to the unsuspecting client over unencrypted HTTP. The attacker can then view all of the traffic between the client and the server in clear text while brokering the half encrypted connection.</p>
+<p>The benefit of SSL Stripping over traditional HTTPS man-in-the-middle is that HTTPS man-in-the-middle requires that the victim accept an invalid or untrusted SSL certificate in order to complete the attack. This is an obvious clue to the target that something is amiss. SSL Stripping provides very few visual clues that the target is being compromised.</p>
+<p>SSL Stripping attacks target the client's trust of the response from the server. Therefore, in order to prevent SSL Stripping, the client must be responsible for ensuring that SSL is used where needed. Sounds dangerous right? Putting any level of control in the hands of the client is always dangerous. However, in this case, there is no other choice. The client HAS to be the decision maker. There are several ways to address this issue.</p>
+<p>The most common approach to solving the SSL Stripping problem is to implement HTTP Strict Transport Security (HSTS). HSTS is an OPT-IN protocol that is activated by the use of a "Strict-Transport-Security" (STS) HTTP response header. the STS header tells the browser to add the origin host to its internally maintained HTTPS-only list. Any host in the HTTPS-only list will be requested via HTTPS, regardless of what the user enters as the URL. This prevents the initial HTTP request that results in the vulnerable redirection. Furthermore, some browsers utilize a HSTS preload list. Administrators can submit their hosts to the various browser vendors to be included in the preload list.</p>
+<p>There are several problems with HSTS. The first issue is that the STS header must be transmitted from the server to the client via HTTPS. Therefore, the issue still remains that the initial connection between the client and server can be "SSL stripped" before the host ever gets added to the HTTP-only list. Getting preloaded into the HTTP-only list solves this problem, but there's a second problem that isn't as easy to remediate.</p>
+<p>What about legacy browsers that don't support HSTS? There's really only one option, and it's not even a great one. JavaScript can be used to enforce HTTPS as opposed to waiting for a server redirect. This adds an extra (thin) layer of security by using the browser to enforce HTTPS from the client-side, preventing the vulnerable client-server exchange. Now before you start flaming this article, let me finish. It must be understood that while this will work, a man-in-the-middle still has control over all cleartext responses from the server to the client. Therefore, if a man-in-the-middle is aware of the JavaScript-based anti-SSL Stripping mechanism, they can customize their SSL Stripping tool to also strip the anti-SSL Stripping code out of the response, rendering the client defenseless. Like I said, it's not a great solution, but it is the only option for legacy browsers.</p>
+<p>The following is an example of JavaScript code will force the client-side of an application to connect to the HTTPS version of a page.</p>
+<div class="codehilite"><pre><span></span><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">104</span><span class="p">,</span><span class="mi">116</span><span class="p">,</span><span class="mi">116</span><span class="p">,</span><span class="mi">112</span><span class="p">,</span><span class="mi">115</span><span class="p">,</span><span class="mi">58</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">!=</span> <span class="nx">proto</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">proto</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Let's walk through the code.</p>
+<p>Line 1 creates a variable called "proto" which has a string value of "https". The reason we create the string this way is to avoid where SSL Stripping tools search and replace all instances of "https" with "http". SSL Stripping tools could add this to the search and replace, but think of how many different ways we can create and obfuscate JavaScript code to create a string equal to "https". Actually, it's limitless. Consider the following JavaScript:</p>
+<div class="codehilite"><pre><span></span><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">105</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">114</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="mi">118</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">110</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="mi">118</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">55</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This creates the string "https". As long as we're dealing with math, we have unlimited possibilities. Line 2 checks to see whether the protocol of the current location of the DOM is "https". If it is not, then line 3 redirects the client to the "https" version of the page. Since the decision is being made on the client side, SSL Stripping tools do not have the opportunity to hijack the redirect from the server, and SSL Stripping is averted.</p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2016 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>
+    </body>
+</html>

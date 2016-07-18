@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/skeleton.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/pygments.css">
+        <link rel="shortcut icon" href="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                    
+                        <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/images/meta/bitbucket.png" /></a></li>
+                    
+                        <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/images/meta/github.png" /></a></li>
+                    
+                        <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/images/meta/youtube.png" /></a></li>
+                    
+                        <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/images/meta/twitter.png" /></a></li>
+                    
+                        <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/images/meta/linkedin.png" /></a></li>
+                    
+                        <li><a href="/contact/"><img src="/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                    
+                        <li><a href="/projects/">Projects</a> | </li>
+                    
+                        <li><a href="/training/">Training</a> | </li>
+                    
+                        <li><a href="/archive/">Archive</a> | </li>
+                    
+                        <li><a href="/categories/">Categories</a> | </li>
+                    
+                        <li><a href="/about/">About</a></li>
+                    
+                    </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    
+<h2>Getting Shell in Modern Restricted User Environments</h2>
+<h5>Wednesday, October 23, 2013</h5>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    
+<div class="content">
+    <p>Anyone that has been doing penetration tests for a reasonable amount of time has at some point encountered a restricted user environment. A restricted user environment is a locked down, and usually shared, environment which restricts users to very limited functionality. These configurations are commonly seen in public kiosks and shared terminal servers.</p>
+<p>The first instinct to achieve shell in one of these environments is to simply run "cmd.exe". In most cases, it's not that easy. Finding a means to run "cmd.exe" can be challenging. The typical routes such as the "Run" command, Windows Explorer, and "Programs" menu are usually disabled. But there are ways to do it. Below I cover one such technique I have been using for several years and have not seen documented elsewhere. It leverages Internet Explorer Developer Tools. Let me show you how it works.</p>
+<p>Most restricted user environments exist solely to provide functionality that is accessed via a web browser. Therefore, Internet Explorer is authorized in just about every restricted Windows environment. While not guaranteed, it has been available in every such environment that I have encountered to date. Built into Internet Explorer is the feature that we are going to leverage, a feature named Developer Tools.</p>
+<p><a href="/images/posts/restricted_dev_tools.png"><img alt="" src="/images/posts/restricted_dev_tools.png" /></a></p>
+<p>The Internet Explorer Developer Tools provide similar functionality to that of Chrome and Firefox. However, there is some additional functionality that becomes quite beneficial in solving our current predicament. Once the Developer Tools panel is loaded via pressing the "F12" key or clicking on "Developers Tools" in the "Tools" menu, a click on the "File" menu of the Developer Tools panel reveals an option named "Customize Internet Explorer view source".</p>
+<p><a href="/images/posts/restricted_customize.png"><img alt="" src="/images/posts/restricted_customize.png" /></a></p>
+<p>This menu option allows the user to select which program on the local system is used to load the HTML source of a web page in Internet Explorer when the "View Source" menu item is selected on the "Page" menu. The first instinct of any penetration tester should be to browse to "cmd.exe", select it as the program, click "OK", then view the source of any web page. While this sounds like a decent plan, there are 2 issues that must be addressed before we can achieve shell this way.</p>
+<p>The first issue is that in restricted user environments, direct access to the contents of the system drive is usually disallowed. The solution to this problem is very simple. By typing the drive letter of the system drive in the "File name" box and hitting the "Enter" key, we are greeted with the contents of the drive.</p>
+<p><a href="/images/posts/restricted_filename.png"><img alt="" src="/images/posts/restricted_filename.png" /></a></p>
+<p>At this point, we browse to the "C:\Windows\System32" folder, select "cmd.exe", and view the source of any web page. We are promptly greeted with the following result.</p>
+<p><a href="/images/posts/restricted_disabled.png"><img alt="" src="/images/posts/restricted_disabled.png" /></a></p>
+<p>This is the second issue. Administrators have become savvy to the use of the command prompt by those looking to conduct nefarious activities on their tightly controlled system, and have leveraged local security policy to disable it. Fortunately, solving this issue is almost as easy as the first, but with a little twist.</p>
+<p><a href="/images/posts/restricted_ps.png"><img alt="" src="/images/posts/restricted_ps.png" /></a></p>
+<p>PowerShell fans everywhere should be screaming at me through their computer screens right about now. The partial answer here is to try and execute PowerShell rather than "cmd.exe" as it is often forgotten by administrators and is not restricted by the security policy setting that explicitly disables the command prompt.</p>
+<p><a href="/images/posts/restricted_policy.png"><img alt="" src="/images/posts/restricted_policy.png" /></a></p>
+<p>So we use the "Customize Internet Explorer view source" approach from above to browse to "C:\Windows\System32\WindowsPowerShell\v1.0", select "powershell.exe", and again view the source of any web page. This time around, we are greeted with the following result.</p>
+<p><a href="/images/posts/restricted_ps_error.png"><img alt="" src="/images/posts/restricted_ps_error.png" /></a></p>
+<p>This image was difficult to capture because, unfortunately, PowerShell doesn't understand the use of a cached HTML file name as syntactically correct input, fails, and exits without providing access to the shell. Bummer. However, there is still another option. Look back 3 images and notice the "powershell_ise.exe" file. The "powershell_ise.exe" program is the PowerShell Integrated Scripting Environment (ISE). It just so happens that by using this as our program to view the source of web pages in Internet Explorer, we are greeted with the following result.</p>
+<p><a href="/images/posts/restricted_ise.png"><img alt="" src="/images/posts/restricted_ise.png" /></a></p>
+<p>A friendly PowerShell IDE! We see our HTML loaded into the script editor and an interactive PowerShell prompt at the bottom of the window. The output from our commands populate the middle pane. This should be sufficient to move forward, but if you would rather have a raw PowerShell prompt, simply click the PowerShell button at the top of the page and you have your wish.</p>
+<p><a href="/images/posts/restricted_ise_shell.png"><img alt="" src="/images/posts/restricted_ise_shell.png" /></a></p>
+<p>At this point, we have accomplished our goal of gaining shell access in the restricted user environment. We can now use PowerSploit to conduct all kinds of nastiness on the target machine and take measures to elevate privilege.</p>
+<p>From the defensive perspective, how do we prevent this type of attack? I am no Active Directory expert, but I am intimately familiar with the concepts of white listing and black listing. There are security policy rules that allow for explicit filtering of accessible programs in restricted user environments.</p>
+<p><a href="/images/posts/restricted_defense.png"><img alt="" src="/images/posts/restricted_defense.png" /></a></p>
+<p>I recommend using one of these security policy rules, preferably the white list rule, to ensure that binary executables which can result in shell are inaccessible to the user.</p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2016 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>
+    </body>
+</html>

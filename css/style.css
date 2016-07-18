@@ -1,0 +1,156 @@
+html {
+    font-size: 0.75rem;
+}
+
+h1 a:link, h1 a:visited, h1 a:active, h1 a:hover,
+h2 a:link, h2 a:visited, h2 a:active, h2 a:hover,
+h3 a:link, h3 a:visited, h3 a:active, h3 a:hover,
+h4 a:link, h4 a:visited, h4 a:active, h4 a:hover,
+h5 a:link, h5 a:visited, h5 a:active, h5 a:hover,
+h6 a:link, h6 a:visited, h6 a:active, h6 a:hover {
+    text-decoration: none;
+    color: #000;
+    border: none;
+}
+
+/*a {
+    color: #FF8080;
+}
+a:hover {
+    color: #FF0000;
+}*/
+
+/*h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}*/
+
+h1 {
+    font-size: 5.0em;
+}
+
+code {
+    white-space: normal;
+}
+
+p > a > img, p > img {
+    display: block;
+    height: auto;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid lightgray;
+    border-radius: 6px;
+}
+
+hr {
+    margin: 20px 0px 20px;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+th {
+    text-align: center;
+}
+
+.container {
+    margin-top: 10px;
+}
+
+.meta ul li {
+    display: inline;
+}
+
+.meta img {
+    width: 30px;
+}
+
+.avatar {
+    border-radius: 15px;
+}
+
+.nav ul {
+    float: right;
+}
+
+.nav ul li {
+    display: inline;
+}
+
+.nav a {
+    /*font-size: 1.25rem;*/
+    text-decoration: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+ 
+.nav a:hover {
+    text-decoration: none;
+}
+
+.comments h6 {
+    margin-bottom: 5px;
+}
+
+.codehilite {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 25px;
+    border: 1px solid lightgray;
+    border-radius: 6px;
+}
+
+.codehilite pre {
+    margin: 10px;
+}
+
+/* tag_box */
+.tag_box {
+    margin: 0;
+    padding: 0;
+    list-style: none outside none;
+    overflow: hidden;
+}
+
+.tag_box li {
+    line-height: 28px;
+}
+
+.tag_box.inline li {
+    float: left;
+}
+
+.tag_box a {
+    padding: 3px 6px;
+    margin: 2px;
+    background: #eee;
+    color: #555;
+    border-radius: 3px;
+    text-decoration: none;
+    border: 1px dashed #cccccc;
+}
+
+.tag_box a span {
+    vertical-align: super;
+    font-size: 0.8em;
+}
+
+.tag_box a:hover {
+    background-color: #e5e5e5;
+}
+
+.tag_box a.active {
+    background: #57A957;
+    border: 1px solid #4c964d;
+    color: #FFF;
+}
+
+/* utility styles */
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}

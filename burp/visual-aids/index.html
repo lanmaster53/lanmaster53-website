@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com - Burp Suite Visual Aids</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/skeleton.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/pygments.css">
+        <link rel="shortcut icon" href="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                    
+                        <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/images/meta/bitbucket.png" /></a></li>
+                    
+                        <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/images/meta/github.png" /></a></li>
+                    
+                        <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/images/meta/youtube.png" /></a></li>
+                    
+                        <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/images/meta/twitter.png" /></a></li>
+                    
+                        <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/images/meta/linkedin.png" /></a></li>
+                    
+                        <li><a href="/contact/"><img src="/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                    
+                        <li><a href="/projects/">Projects</a> | </li>
+                    
+                        <li><a href="/training/">Training</a> | </li>
+                    
+                        <li><a href="/archive/">Archive</a> | </li>
+                    
+                        <li><a href="/categories/">Categories</a> | </li>
+                    
+                        <li><a href="/about/">About</a></li>
+                    
+                    </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    
+<h1>Burp Suite Visual Aids</h1>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    
+    
+        <h3>Disable Browser XSS Protections</h3>
+<p>Here's a cross-platform technique for disabling those pesky browser XSS protections. The rule to add the <code>X-XSS-Protection</code> header exists as a default rule in Burp, but you'll have to add the rule that removes any existing <code>X-XSS-Protection</code> header or browser XSS protections will not be disabled for applications that explicitely enable them. The reason is, the RFC specifically states that the values of multiple headers with the same name are concatenated under one header and separated with a semicolon. Therefore, if the target application sets the header <code>X-XSS-Protection: 1; mode=block</code>, and we have Burp set an additional header of <code>X-XSS-Protection: 0</code>, the parsed value at the browser becomes <code>X-XSS-Protection: 1; mode=block; 0</code>, which in my testing resulted in only the first value being processed and the protection still enabled.</p>
+<p><a href="/images/posts/burp_xss_protection.png"><img alt="" src="/images/posts/burp_xss_protection.png" /></a></p>
+<h3>SSL Stripping Configuration</h3>
+<p>Do this before visiting the website. After making the configuration change, type the target URL  without the protocol into the address bar and hit enter. If the target is vulnerable, Burp will strip the SSL and render the page over an unencrypted session. At this point, I typically click on the address bar where the lock, etc. would normally be and take a screen shot of the message stating that the page is not protected.</p>
+<p><a href="/images/posts/burp_ssl_strip.png"><img alt="" src="/images/posts/burp_ssl_strip.png" /></a></p>
+<h3>Quick'n'Easy Method Interchange</h3>
+<p>Don't be like me and manipulate protocol data manually to test for Method Interchange.</p>
+<p><a href="/images/posts/burp_method_interchange.png"><img alt="" src="/images/posts/burp_method_interchange.png" /></a></p>
+<h3>Scan Thoroughly</h3>
+<p>This.</p>
+<p><a href="/images/posts/burp_scanner_thorough.jpg"><img alt="" src="/images/posts/burp_scanner_thorough.jpg" /></a></p>
+<p><a href="/images/posts/burp_scanner_thorough.png"><img alt="" src="/images/posts/burp_scanner_thorough.png" /></a></p>
+<h3>Scan Defined Insertion Points</h3>
+<p>For scanning, I use this almost exclusively. This provides a lot of control over what gets scanned and allows for scanning all parts of the protocol.</p>
+<p><a href="/images/posts/burp_scan_param.png"><img alt="" src="/images/posts/burp_scan_param.png" /></a></p>
+<h3>Disable Intercept by Default</h3>
+<p>Don't lie... you've sat there staring at your browser, wondering why the application wasn't responding. Then, after 10 minutes of troubleshooting, you realized that the Intercept tab was glowing orange in the background. Yeah, we've all been there. Burp finally solved that problem.</p>
+<p><a href="/images/posts/burp_disable_intercept.png"><img alt="" src="/images/posts/burp_disable_intercept.png" /></a></p>
+<h3>Filter Out the Noise</h3>
+<p>Did you know that Burp has a filter for what is displayed in the Targets, HTTP history, and Websockets history tabs? If not, it's probably because the button that opens the filter is poorly styled for its position in the interface. No worries, here's how you access the filter. This is extremely useful for filtering out unimportant content-types and out-of-scope requests/responses.</p>
+<p><a href="/images/posts/burp_filter_ribbon.png"><img alt="" src="/images/posts/burp_filter_ribbon.png" /></a></p>
+<h3>Configure for Privacy</h3>
+<p>Prevent leaking client information to 3rd parties.</p>
+<p><a href="/images/posts/burp_privacy.png"><img alt="" src="/images/posts/burp_privacy.png" /></a></p>
+    
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2016 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>
+    </body>
+</html>

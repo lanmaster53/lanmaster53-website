@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/skeleton.css">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/pygments.css">
+        <link rel="shortcut icon" href="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="http://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                    
+                        <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/images/meta/bitbucket.png" /></a></li>
+                    
+                        <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/images/meta/github.png" /></a></li>
+                    
+                        <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/images/meta/youtube.png" /></a></li>
+                    
+                        <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/images/meta/twitter.png" /></a></li>
+                    
+                        <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/images/meta/linkedin.png" /></a></li>
+                    
+                        <li><a href="/contact/"><img src="/images/meta/email.png"></a></li>
+                    </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                    
+                        <li><a href="/projects/">Projects</a> | </li>
+                    
+                        <li><a href="/training/">Training</a> | </li>
+                    
+                        <li><a href="/archive/">Archive</a> | </li>
+                    
+                        <li><a href="/categories/">Categories</a> | </li>
+                    
+                        <li><a href="/about/">About</a></li>
+                    
+                    </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    
+<h2>Session Fixation Demystified</h2>
+<h5>Wednesday, October 29, 2014</h5>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    
+<div class="content">
+    <p>I've recently been approached by quite a few junior consultants having issues with understanding, discovering, and exploiting Session Fixation. Rather than continue to provide impromptu training, I decided to brain dump everything I know about Session Fixation into an article for reference.</p>
+<p>While not as sexy as many of the other vulnerabilities we deal with in Application Security, Session Fixation is quite common and exposes applications and users to substantial risk. I see Session Fixation behavior in approximately 60% of the applications I test, with it being exploitable in approximately a quarter of those instances.</p>
+<h3>Session Fixation Defined</h3>
+<p>Session Fixation is a vulnerability that allows an attacker to predetermine the session token value of a victim. Like Session Hijacking, Session Fixation allows the attacker to assume the identity of the victim user in the context of the application. The root cause of Session Fixation is when an application does not provide a new session identifier, or token, upon successful authentication. In many cases, application's unnecessarily issue session tokens prior to authentication. In other cases, application's contain core business functionality in the pre-authentication pages that require an active session (e-commerce). These 2 conditions, if not handled properly, can result in Session Fixation.</p>
+<p>Let's use Amazon as an example. When a user goes to Amazon.com, they can shop the catalogue of items and add items to their shopping cart prior to authenticating. In order for Amazon to maintain state with the user, Amazon must create a session to manage the user's data and issue a token to the user's browser. When the user decides to purchase the items they have added to their unauthenticated shopping cart, they must authenticate to Amazon. This is the important part. When the user successfully authenticates, Amazon must take all of the information associated with the user's unauthenticated session and associate it with a new session. Amazon must then expire the old session token, and replace it with the token associated with the new session. If Amazon does not create a new session upon successful authentication, then theoretically, an attacker could go to Amazon first, be issued a session token for a valid unauthenticated session with the application, fixate that session into a victim's browser, and wait for the victim to log in. After the victim logs in with the attackers fixated session, all the attacker has to do is refresh their browser and they will be authenticated as the victim.</p>
+<h3>Discovering Session Fixation</h3>
+<p>Determining if an application is susceptible to Session Fixation is easily accomplished with the following steps.</p>
+<ol>
+<li>Map the unauthenticated portion of the application.</li>
+<li>Determine if a session cookie has been set in the browser. This can be done by looking at the <code>Set-Cookie</code> headers generated through mapping, using the browser's Developer Tools to view cookies associated with the current domain, or by looking at the <code>Cookie</code> header sent with the most recent request.</li>
+<li>If a session token exists, note the value.</li>
+<li>Authenticate to the application.</li>
+<li>Compare the post-authenticated session token to the pre-authenticated session token. If they are the same, Session Fixation exists.</li>
+</ol>
+<p>Regardless of exploitability, which we'll discuss shortly, I consider the existence of Session Fixation behavior to be a low risk finding because it shows failure to design a Session Management system according to security best practices.</p>
+<h3>Exploiting Session Fixation</h3>
+<p>If you are the inquisitive type, then you immediately picked up on the statement, "...fixate that session into a victim's browser..." in the Amazon scenario above and said to yourself, "How do you do that?". Good question. This is the second, and more difficult, part of Session Fixation. The previously discussed behavior means that the potential for Session Fixation exists, but exploitability is still in question. In order to exploit Session Fixation, one of several conditions must exist.</p>
+<ul>
+<li>Cookieless sessions used for session management.</li>
+<li>Cross-Site Scripting (XSS) in the unauthenticated portion of the application.</li>
+<li>XSS in another application on the same domain.</li>
+</ul>
+<h4>Cookieless Sessions</h4>
+<p>Cookieless sessions are sessions that are managed by a token that is passed in some form other than a cookie. This means that the session token is passed between the client and server as a parameter in the URL, a parameter in the POST payload, or embedded in the URL. Below is an example of a .NET cookieless session. .NET rewrites each URL on the page to include the session token.</p>
+<div class="codehilite"><pre><span></span>http://www.example.com/s(lit3py55t21z5v55vlm25s55)/orderform.aspx
+</pre></div>
+
+
+<p>There are several reasons for using cookieless sessions. Cookieless sessions allow for multiple sessions with the same browser instance. Have you ever tried to log into a cookie based application on 2 different tabs with 2 different accounts in the same browser instance? It doesn't work in most cases. It is difficult for an application to allow for multiple simultaneous sessions when using Cookies. Cookieless sessions allow for it seamlessly. Cookieless sessions also allow for session management in browsers that don't support cookies. Nowadays cookie support shouldn't be an issue, but you never know what kind of technical restrictions your client may be operating under.</p>
+<p>The problem with cookieless sessions is that they provide the potential for several vulnerabilities. They can result in Information Disclosure as they may allow the session token to be disclosed in logs, Referer headers, proxies, and caches. They also allow Session Fixation to be exploited by providing a mechanism for an attacker to fixate a session into a victim's browser. Let's revisit the Amazon example and pretend that Amazon uses cookieless sessions where the session token is embedded in the URL, and does not issue new session tokens upon successful authentication. An attacker can go to Amazon and be issued a valid unauthenticated session token. The attacker can then craft a link to Amazon with the valid session token embedded in the URL and send it to the victim as part of a Social Engineering attack. The victim opens the link, sees that they are not authenticated to Amazon, and authenticates. The attacker refreshes his browser and assumes the identity of the victim in the context of the application. The ability to dictate the session token value through a request parameter or URL makes exploiting Session Fixation trivial.</p>
+<p>I consider Session Fixation that is exploitable via cookieless sessions a high risk finding as it is extremely easy to exploit, requiring only the click of a link, and provides a likely vector of attack for privilege escalation.</p>
+<h4>Cross-Site Scripting (XSS)</h4>
+<p>The Document Object Model (DOM) within the browser allows for cookies to be created and overwritten with JavaScript. If XSS exists somewhere in the application prior to authentication, then JavaScript can be used to overwrite the current session token cookie with an attacker's predetermined session token. One catch with this attack vector is that if the current session token cookie was created using the <code>HttpOnly</code> flag, then the cookie will not be accessible through the DOM and cannot be overwritten. However, XSS on another application within the same domain may bypass this restriction. More on this in a moment. META tags are another option for overwriting cookies where HTML injection is possible. Below are examples of injection payloads that create or overwrite a browser cookie.</p>
+<ul>
+<li>JavaScript</li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="nt">&lt;script&gt;</span>document.cookie=&#39;SESSION_ID=THISISAFIXATEDCOOKIE; expires=Thu, 18 Dec 2015 12:00:00 UTC; path=/; domain=google.com; path=/&#39;<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+
+<ul>
+<li>HTML Injection</li>
+</ul>
+<div class="codehilite"><pre><span></span><span class="o">&lt;</span><span class="nt">meta</span> <span class="nt">http-equiv</span><span class="o">=</span><span class="nt">Set-Cookie</span> <span class="nt">content</span><span class="o">=</span><span class="s2">&quot;SESSION_ID=THISISAFIXATEDCOOKIE; expires=Thu, 18 Dec 2015 12:00:00 UTC; path=/; domain=google.com; path=/&quot;</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>An application won't arbitrarily issue a new session token if a session token already exists. Therefore, an attacker may be able to use a XSS vulnerability in another application on the same domain to create the cookie for the target application before the victim visits the site and is issued a <code>HttpOnly</code> flagged session token cookie. This is possible because any host within a domain can create cookies that will be passed to the root domain and any host associated with it. I tested this functionality with Google using Chrome's Developer Tools and JavaScript Console. </p>
+<p>First, I added an arbitrary cookie to the DOM of the application running on <code>mail.google.com</code> to simulate writing a cookie via XSS.</p>
+<p><a href="/images/posts/fixation_1.png"><img alt="" src="/images/posts/fixation_1.png" /></a></p>
+<p>I then visited the root Google domain and several other hosts on the Google domain. The created cookie was passed along to each resource.</p>
+<p><a href="/images/posts/fixation_2.png"><img alt="" src="/images/posts/fixation_2.png" /></a></p>
+<p>This behavior allows us to bypass the <code>HttpOnly</code> restriction and fixate sessions on applications in the same domain via XSS.</p>
+<p>I consider Session Fixation that is exploitable via XSS to be a medium risk finding as it still provides a likely vector of attack for privilege escalation, but requires another vulnerability to exploit. The XSS flaw is obviously rated separately and will probably receive the higher risk rating.</p>
+<h3>Preventing Session Fixation</h3>
+<p>Preventing Session Fixation is simple. If no pre-authenticated session is required, do not issue session tokens until successful authentication has occurred. If a pre-authentication session is required, always issue new session tokens upon successful authentication. This can be done several ways. The first option focuses on the session token itself. Create a new session token, associate the new session token with the existing session, disassociate the old session token, pass the new session token to the client. The second option focuses on the entire session. Create a new session, copy all of the session data from the old session to the new session, destroy the old session, pass the token associated with the new session to the client.</p>
+<h3>Conclusion</h3>
+<p>I'm certain that there are other ways to exploit (header injection via network attack) and prevent (anomaly detection) Session Fixation, but the approaches I mention here are the simplest and most common based on my experience as an Application Security consultant. I encourage you to continue researching the topic. I leave you with this flow chart for discovering and assigning risk ratings to Session Fixation vulnerabilities. I hope you find it useful. Enjoy!</p>
+<p><a href="/images/posts/fixation_3.png"><img alt="" src="/images/posts/fixation_3.png" /></a></p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p>
+                            &copy; 2016 Tim Tomes
+                            <span style="float: right;">
+                                powered by
+                                <a href="http://flask.pocoo.org/" target="_blank" title="Flask: Python Web Development Microframework">Flask</a>
+                                and <a href="http://getskeleton.com/" target="_blank" title="Skeleton CSS">Skeleton</a>
+                            </span>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>
+    </body>
+</html>
