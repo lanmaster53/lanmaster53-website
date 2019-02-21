@@ -168,6 +168,10 @@ ul ul, ul ol, ol ol, ol ul {
     color: #FFF;
 }
 
+.company-logo {
+    border: 0;
+}
+
 /* utility styles */
 .centered {
     margin-left: auto;
