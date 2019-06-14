@@ -44,7 +44,7 @@ code {
     white-space: normal;
 }
 
-p > a > img, p > img {
+.content img {
     display: block;
     height: auto;
     max-width: 90%;
@@ -52,6 +52,11 @@ p > a > img, p > img {
     margin-right: auto;
     border: 1px solid lightgray;
     border-radius: 6px;
+}
+
+.content li img {
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
 }
 
 hr {
