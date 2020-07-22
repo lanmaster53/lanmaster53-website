@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -78,8 +76,8 @@
 </ul>
 <h4>Cookieless Sessions</h4>
 <p>Cookieless sessions are sessions that are managed by a token that is passed in some form other than a cookie. This means that the session token is passed between the client and server as a parameter in the URL, a parameter in the POST payload, or embedded in the URL. Below is an example of a .NET cookieless session. .NET rewrites each URL on the page to include the session token.</p>
-<div class="codehilite"><pre><span></span>http://www.example.com/s(lit3py55t21z5v55vlm25s55)/orderform.aspx
-</pre></div>
+<div class="codehilite"><pre><span></span><code>http://www.example.com/s(lit3py55t21z5v55vlm25s55)/orderform.aspx
+</code></pre></div>
 
 
 <p>There are several reasons for using cookieless sessions. Cookieless sessions allow for multiple sessions with the same browser instance. Have you ever tried to log into a cookie based application on 2 different tabs with 2 different accounts in the same browser instance? It doesn't work in most cases. It is difficult for an application to allow for multiple simultaneous sessions when using Cookies. Cookieless sessions allow for it seamlessly. Cookieless sessions also allow for session management in browsers that don't support cookies. Nowadays cookie support shouldn't be an issue, but you never know what kind of technical restrictions your client may be operating under.</p>
@@ -90,15 +88,15 @@
 <ul>
 <li>JavaScript</li>
 </ul>
-<div class="codehilite"><pre><span></span><span class="nt">&lt;script&gt;</span>document.cookie=&#39;SESSION_ID=THISISAFIXATEDCOOKIE; expires=Thu, 18 Dec 2015 12:00:00 UTC; path=/; domain=google.com; path=/&#39;<span class="nt">&lt;/script&gt;</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>&lt;script&gt;document.cookie=&#39;SESSION_ID=THISISAFIXATEDCOOKIE; expires=Thu, 18 Dec 2015 12:00:00 UTC; path=/; domain=google.com; path=/&#39;&lt;/script&gt;
+</code></pre></div>
 
 
 <ul>
 <li>HTML Injection</li>
 </ul>
-<div class="codehilite"><pre><span></span><span class="o">&lt;</span><span class="nt">meta</span> <span class="nt">http-equiv</span><span class="o">=</span><span class="nt">Set-Cookie</span> <span class="nt">content</span><span class="o">=</span><span class="s2">&quot;SESSION_ID=THISISAFIXATEDCOOKIE; expires=Thu, 18 Dec 2015 12:00:00 UTC; path=/; domain=google.com; path=/&quot;</span><span class="o">&gt;</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>&lt;meta http-equiv=Set-Cookie content=&quot;SESSION_ID=THISISAFIXATEDCOOKIE; expires=Thu, 18 Dec 2015 12:00:00 UTC; path=/; domain=google.com; path=/&quot;&gt;
+</code></pre></div>
 
 
 <p>An application won't arbitrarily issue a new session token if a session token already exists. Therefore, an attacker may be able to use a XSS vulnerability in another application on the same domain to create the cookie for the target application before the victim visits the site and is issued a <code>HttpOnly</code> flagged session token cookie. This is possible because any host within a domain can create cookies that will be passed to the root domain and any host associated with it. I tested this functionality with Google using Chrome's Developer Tools and JavaScript Console. </p>

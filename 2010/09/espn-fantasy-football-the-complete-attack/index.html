@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -66,7 +64,7 @@
 <p>It all started at DEFCON 17. I had spent the majority of my time in the Web App Security track and really enjoyed the concepts of web application testing. As we all know, DEFCON is in late July / early August which was also about the time I typically set up my FFB league for the year. As I was editing my team settings, I saw that you could set a custom image in the form of a url. Since the image is then shown back to you on every page you visit within the league from that point forward, I figured there was some serious potential for a stored XSS attack there. Looking at the code, I noticed that all it did was take the url you submit, and throw it into the 'src' attribute of an image tag. In my first attempt to exploit, i filled the image tag with arbitrary data and appended a script tag to the closed image tag. To ESPN's credit, they actually validated the input and filtered out all '&lt;' and '&gt;'. Therefore, the script tag didn't work. I'd have to exploit via the image tag. Very easy. There are several events in an image that allows you to run javascript, 'onerror' and 'onload'. As you can see from my demo last year, I initially went with the 'onerror' event because I wanted to be completely obvious in testing. ESPN did not validate and filter out any javascript code, so the exploitation worked perfectly. For practical implementation, I went with the 'onload' event, loading an actual team image, and running the script upon a successful load. I had some fun with this over the season.</p>
 <h3>Exploitation:</h3>
 <p>My favorite implementation was a script that prompted other players viewing my team if they were my opponent that week. If they clicked 'yes', then the script went through a series or random "trash talking" phrases. If they clicked 'no', then they were forward to my team page. Harmless really. As I began to look more into the FFB software, I began to notice the same parameter issues that xssniper pointed out in his blog. So a few months ago, I wrote a script which uses the stored XSS vulnerability to parse all of the required parameters from the visiting players browser and executes any series of evil things based upon those params. The code below first determines whether the visiting player is logged in or not. If they are logged in, it parses out the 'teamId', makes an AJAX call for their team page, parses out all of the 'playerId's, then loops through and benches every player using a dummy javascript image request. Basically, on gameday, when my opponent launches the scoreboard, their entire team is benched and they are unable to score any points. XSS FTW... literally!!!</p>
-<div class="codehilite"><pre><span></span><span class="kd">function</span> <span class="nx">unique</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">function</span> <span class="nx">unique</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">();</span>
   <span class="nx">o</span><span class="o">:</span><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">n</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
@@ -123,7 +121,7 @@
   <span class="p">};</span>
   <span class="nx">xmlhttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Script usage:</p>
@@ -136,14 +134,14 @@
 <p>The script is seen as coming from espn, so same origin policy applies and the script is allowed to run. Also, NoScript doesn't help unless you are blocking globally which ruins the espn.com experience.</p>
 <p>Other information I was able to discover:</p>
 <p>transType table:</p>
-<div class="codehilite"><pre><span></span>1=Move
+<div class="codehilite"><pre><span></span><code>1=Move
 2=Add
 3=Drop
-</pre></div>
+</code></pre></div>
 
 
 <p>Position table:</p>
-<div class="codehilite"><pre><span></span>0=QB
+<div class="codehilite"><pre><span></span><code>0=QB
 1=Not on Roster
 2=RB1/2
 3=RB/WR
@@ -152,25 +150,25 @@
 16=D
 17=K
 20=BENCH
-</pre></div>
+</code></pre></div>
 
 
 <p>ADD Player:</p>
-<div class="codehilite"><pre><span></span>transType_playerId_?_?_startPos?_endPos
+<div class="codehilite"><pre><span></span><code>transType_playerId_?_?_startPos?_endPos
 ex. 2_11390_-1_1001_1_20
-</pre></div>
+</code></pre></div>
 
 
 <p>MOVE Player:</p>
-<div class="codehilite"><pre><span></span>transType_playerId_startPos_endPos
+<div class="codehilite"><pre><span></span><code>transType_playerId_startPos_endPos
 ex. 1_1753_0_20
-</pre></div>
+</code></pre></div>
 
 
 <p>DROP Player:</p>
-<div class="codehilite"><pre><span></span>transType_playerId_teamId/scoringPeriod?_Position_?_?
+<div class="codehilite"><pre><span></span><code>transType_playerId_teamId/scoringPeriod?_Position_?_?
 ex. 3_1753_1_2_-1_1002
-</pre></div>
+</code></pre></div>
 
 
 <p>Bottom-line Findings and Mitigation:</p>

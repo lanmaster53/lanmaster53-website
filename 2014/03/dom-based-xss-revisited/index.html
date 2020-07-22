@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -76,12 +74,12 @@
 </li>
 </ul>
 <p>When a URL is given to a browser, the browser immediately begins building the Document Object Model (DOM) for the given page, even before it sends the request to the desired resource. At that point, the DOM contains all of the components required to make the request to the server including the resource URL and accompanying parameters. The request is eventually sent to the server hosting the desired resource and a response is received. D-XSS comes into play when the client-side code of the response (usually JavaScript) parses these DOM elements and creates dynamic content from them. Consider the following example code.</p>
-<div class="codehilite"><pre><span></span>You are here: <span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;location&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<div class="codehilite"><pre><span></span><code>You are here: <span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;location&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="kd">var</span> <span class="nx">loc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
     <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">loc</span><span class="p">;</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>In the example above, the developer uses JavaScript to retrieve the value of the current page URL from the <code>document.location.href</code> DOM attribute and assigns it to a variable named <code>loc</code>. The developer then modifies the DOM and sets the <code>innerHTML</code> value of a <code>span</code> element to the value of the <code>loc</code> variable. The URL can now be used to inject malicious client-side code into the page via D-XSS.</p>
@@ -89,26 +87,26 @@
 <ul>
 <li>Code</li>
 </ul>
-<div class="codehilite"><pre><span></span>Hello
+<div class="codehilite"><pre><span></span><code>Hello
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;name=&quot;</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">);</span>
     <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span><span class="p">);</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-</pre></div>
+</code></pre></div>
 
 
 <ul>
 <li>Exploit</li>
 </ul>
-<div class="codehilite"><pre><span></span>http://example.com?name=<span class="nt">&lt;script&gt;</span>alert(42)<span class="nt">&lt;/script&gt;</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>http://example.com?name=&lt;script&gt;alert(42)&lt;/script&gt;
+</code></pre></div>
 
 
 <ul>
 <li>Result</li>
 </ul>
-<div class="codehilite"><pre><span></span>Hello <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">42</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>!
-</pre></div>
+<div class="codehilite"><pre><span></span><code>Hello <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">42</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>!
+</code></pre></div>
 
 
 <p>In the example above, the developer uses JavaScript to retrieve the value of the "name" parameter from the <code>document.URL</code> DOM attribute. The developer then writes the parameter value directly to the page as part of a greeting. The "name" parameter and anything appearing after it in the URL can now be used to inject malicious client-side code into the page via D-XSS.</p>
@@ -117,26 +115,26 @@
 <ul>
 <li>Code</li>
 </ul>
-<div class="codehilite"><pre><span></span>Hello
+<div class="codehilite"><pre><span></span><code>Hello
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;name=&quot;</span><span class="p">)</span><span class="o">+</span><span class="mi">5</span><span class="p">);</span>
     <span class="nb">document</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span><span class="p">);</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-</pre></div>
+</code></pre></div>
 
 
 <ul>
 <li>Exploit</li>
 </ul>
-<div class="codehilite"><pre><span></span>http://example.com?name=Tim#<span class="nt">&lt;script&gt;</span>alert(42)<span class="nt">&lt;/script&gt;</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>http://example.com?name=Tim#&lt;script&gt;alert(42)&lt;/script&gt;
+</code></pre></div>
 
 
 <ul>
 <li>Result</li>
 </ul>
-<div class="codehilite"><pre><span></span>Hello Tim#<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">42</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>!
-</pre></div>
+<div class="codehilite"><pre><span></span><code>Hello Tim#<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">42</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>!
+</code></pre></div>
 
 
 <p>In this example, the parameter value of <code>Tim</code> is still sent to the server, but <code>Tim#&lt;script&gt;alert(42)&lt;/script&gt;</code> is parsed from the <code>document.URL</code> DOM attribute and added to the HTML of the page, exposing the target to the payload. This exploit bypasses any server-side mitigation to D-XSS.</p>

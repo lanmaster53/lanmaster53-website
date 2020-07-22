@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -62,19 +60,19 @@
 <ul>
 <li><code>GET</code></li>
 </ul>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/resource.ext?name1=value1&amp;name2=value2</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Host</span><span class="o">:</span> <span class="l">www.example.com</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>GET /resource.ext?name1=value1&amp;name2=value2 HTTP/1.1
+Host: www.example.com
+</code></pre></div>
 
 
 <ul>
 <li><code>POST</code></li>
 </ul>
-<div class="codehilite"><pre><span></span><span class="nf">POST</span> <span class="nn">/resource.ext</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Host</span><span class="o">:</span> <span class="l">www.example.com</span>
+<div class="codehilite"><pre><span></span><code>POST /resource.ext HTTP/1.1
+Host: www.example.com
 
 name1=value1&amp;name2=value2
-</pre></div>
+</code></pre></div>
 
 
 <p>There are other methods for sending parameters to a server (alternate data formats such as XML and JSON, embedded in the structure of the URI as in RESTful services, other parts of an HTTP request such as custom headers), but here we are referring to the traditional methods provided by the HTTP protocol: <code>GET</code> and <code>POST</code>.</p>

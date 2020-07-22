@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -62,15 +60,15 @@
 <p>Which translated to this:</p>
 <p><a href="/static/images/posts/qr_bmp.png"><img alt="" src="/static/images/posts/qr_bmp.png" /></a></p>
 <p>Which, when scanned with a QR code reader, displayed:</p>
-<div class="codehilite"><pre><span></span>VANDALS WANG
-</pre></div>
+<div class="codehilite"><pre><span></span><code>VANDALS WANG
+</code></pre></div>
 
 
 <p>If you ran into Vandal (one of the goons) at the conference, he was wearing a QR code around his neck.  When scanned, it displayed:</p>
-<div class="codehilite"><pre><span></span>Vandal
+<div class="codehilite"><pre><span></span><code>Vandal
 Official Defcon Scavenger Hunt Judge
 STOP ASKING ABOUT MY WANG!!!
-</pre></div>
+</code></pre></div>
 
 
 <h3>Puzzle #2: Ninja Party</h3>
@@ -81,7 +79,7 @@ STOP ASKING ABOUT MY WANG!!!
 <p>If you entered the pattern correctly, the screen displayed this:</p>
 <p><a href="/static/images/posts/unlocked.jpg"><img alt="" src="/static/images/posts/unlocked.jpg" /></a></p>
 <p>We weren't about to navigate the clumsy interface and attempt to brute force the key to solve the puzzle, so we went straight to the code (C for those interested). Inside the code we found this:</p>
-<div class="codehilite"><pre><span></span><span class="cm">/**************************************************************/</span>
+<div class="codehilite"><pre><span></span><code><span class="cm">/**************************************************************/</span>
 <span class="cm">/* NINJA ROUTINES</span>
 <span class="cm">/**************************************************************/</span>
 
@@ -113,11 +111,11 @@ STOP ASKING ABOUT MY WANG!!!
 
     <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>After some reverse engineering on paper, we solved the encoding and validation algorithms and wrote the following Python script to display every possible key. With 3^15 possibilities, there were only 3,503 valid codes. The script creates a file with all of the possible keys in it.</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">base10toN</span><span class="p">(</span><span class="n">num</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">base10toN</span><span class="p">(</span><span class="n">num</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
      <span class="sd">&quot;&quot;&quot;Change a  to a base-n number.</span>
 <span class="sd">     Up to base-36 is supported without special notation.&quot;&quot;&quot;</span>
      <span class="n">num_rep</span><span class="o">=</span><span class="p">{</span><span class="mi">10</span><span class="p">:</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
@@ -160,7 +158,7 @@ STOP ASKING ABOUT MY WANG!!!
          <span class="n">current</span><span class="o">=</span><span class="n">current</span><span class="o">/</span><span class="n">n</span>
      <span class="k">return</span> <span class="n">new_num_string</span> <span class="c1">## end of http://code.activestate.com/recipes/65212/ }}}</span>
 
-<span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
 <span class="c1">#14348907</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
@@ -171,11 +169,11 @@ STOP ASKING ABOUT MY WANG!!!
    <span class="c1">#print b</span>
    <span class="k">if</span> <span class="n">a</span> <span class="o">^</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">2326</span><span class="p">:</span>
       <span class="n">cnt</span> <span class="o">=</span> <span class="n">cnt</span> <span class="o">+</span> <span class="mi">1</span>
-      <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">base10toN</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-      <span class="nb">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">base10toN</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+      <span class="nb">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">base10toN</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">base10toN</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">))[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="nb">file</span><span class="o">.</span><span class="n">closed</span>
-</pre></div>
+<span class="n">file</span><span class="o">.</span><span class="n">closed</span>
+</code></pre></div>
 </div>
 <p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
 <hr>

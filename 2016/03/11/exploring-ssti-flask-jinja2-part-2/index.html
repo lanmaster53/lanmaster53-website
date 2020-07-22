@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -83,7 +81,7 @@
 <p><a href="/static/images/posts/ssti_flask_p2_3.png"><img alt="" src="/static/images/posts/ssti_flask_p2_3.png" /></a></p>
 <p>So, we've now demonstrated that arbirtrary file access is possible via SSTI in Flask/Jinja2, but we're not done yet. My goal in this was Remote Code/Command Execution.</p>
 <p>The previous article referenced several methods of the <code>config</code> object that load objects into the Flask configuration environment. One such method was the <code>from_pyfile</code> method. Below is the code for the <code>from_pyfile</code> method of the <code>Config</code> class, <code>flask/config.py</code>.</p>
-<div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">from_pyfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">from_pyfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Updates the values in the config from a Python file.  This function</span>
 <span class="sd">        behaves as if the file was imported as module with the</span>
 <span class="sd">        :meth:`from_object` function.</span>
@@ -102,15 +100,15 @@
         <span class="n">d</span><span class="o">.</span><span class="vm">__file__</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
-                <span class="k">exec</span><span class="p">(</span><span class="nb">compile</span><span class="p">(</span><span class="n">config_file</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">),</span> <span class="n">d</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+                <span class="n">exec</span><span class="p">(</span><span class="nb">compile</span><span class="p">(</span><span class="n">config_file</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">),</span> <span class="n">d</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">silent</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="ow">in</span> <span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span> <span class="n">errno</span><span class="o">.</span><span class="n">EISDIR</span><span class="p">):</span>
-                <span class="k">return</span> <span class="bp">False</span>
+                <span class="k">return</span> <span class="kc">False</span>
             <span class="n">e</span><span class="o">.</span><span class="n">strerror</span> <span class="o">=</span> <span class="s1">&#39;Unable to load configuration file (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span>
             <span class="k">raise</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">True</span>
-</pre></div>
+        <span class="k">return</span> <span class="kc">True</span>
+</code></pre></div>
 
 
 <p>There's a couple of interesting things here. The most obvious is the use of the <code>compile</code> function against the contents of a file whose path is provided as a parameter. This would come in handy if we had a way to write files to the operating system, no? Well, as we just discussed, we do! We can use the aforementioned <code>file</code> class to not only read files, but write them to world writeable locations on the target server. Then, we can call the <code>from_pyfile</code> method through the SSTI vulnerability to compile the file and execute the contents. This is a 2 staged attack. First, inject something like <code>{{ ''.__class__.__mro__[2].__subclasses__()[40]('/tmp/owned.cfg', 'w').write('&lt;malicious code here&gt;'') }}</code> into the SSTI vulnerability. Then, invoke the compilation process by injecting <code>{{ config.from_pyfile('/tmp/owned.cfg') }}</code>. The code will execute upon compilation. Remote Code Execution achieved.</p>

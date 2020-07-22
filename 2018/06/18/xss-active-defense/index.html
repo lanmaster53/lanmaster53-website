@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -57,36 +55,36 @@
 
 <p>First, the basics. XSS is a client-side code injection issue where the goal is to inject client-side code in such a way that a malicious payload executes in the JavaScript context, regardless of where the payload lands in the page. The bottom line is that the final attack executes as JavaScript. When attempting to discover XSS flaws, an attacker is always going to develop proof-of-concept payloads to validate the issue prior final exploitation. This is a universal methodology. The first active defense technique I want to share preys on this universal behavior.</p>
 <p>The most common proof-of-concept payload used during the discovery process is typically some variation of the <code>alert</code> JavaScript function, regardless of the context. I understand that there are many options with which to conduct a proof-of-concept attack, but this technique applies to all of them and for this demonstration we're going to use <code>alert</code>. Like many other programming/scripting languages like it, we have the ability to overwrite functions in JavaScript. If we know that an attacker is going to use the <code>alert</code> function to create a proof-of-concept while validating XSS on a target application, then the <code>alert</code> function itself becomes an opportunity for detection and action when we apply what we know about JavaScript. Take the following block of code:</p>
-<div class="codehilite"><pre><span></span><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
 <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// report malicious behavior</span>
     <span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>This code saves the original <code>alert</code> function as <code>_alert</code>. The code then creates a new <code>alert</code> function. The new <code>alert</code> function does anything we want whenever the browser calls it, and then initiates the original behavior by calling <code>_alert</code>. Since the <code>alert</code> function usually indicates malicious behavior, this gives us an opportunity to detect an attack, and in the case of active defense, respond with some action of our own. Let's expand on the above code to do something interesting.</p>
-<div class="codehilite"><pre><span></span><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
 <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
     <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&quot;https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/HTML&quot;</span><span class="p">;</span>
     <span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>The added code is a HoneyBadger HTML agent using a JavaScript image object. The cool thing about creating an image this way is that browsers immediately fire off the request for the <code>src</code> as soon as it is set, and the image never has to be added to the DOM. This means there is no visual evidence of attack in the user interface. As it stands right now, there are a variety of agents that we could place in our fake <code>alert</code> function, i.e. HTML, JavaScript (HTML5), Java Applet, etc., but you can literally do anything you'd like. Pretty cool, right?</p>
 <p>Beyond overwriting the <code>alert</code> function, there are a few other XSS specific HoneyBadger agents that I've come up with recently: Content-Security-Policy and XSS-Protection. Both of these agents incorporate reporting functionality for debugging issues during the implementation process. However, defenders can use the reporting functionality built into these mechanisms to report back to say... a HoneyBadger server.</p>
 <p>The Content-Security-Policy agent reports upon any violation of the configured policy, which when done correctly indicates the introduction of arbitrary client-side code. Incorporating either of these agents into a web page requires the ability to set headers for the page's response. The following headers create the Content-Security-Policy agent:</p>
-<div class="codehilite"><pre><span></span><span class="nt">X-XSS-Protection</span><span class="o">:</span> <span class="nt">0</span>
-<span class="nt">Content-Security-Policy-Report-Only</span><span class="o">:</span> <span class="o">&lt;</span><span class="nt">policy</span><span class="o">&gt;;</span> <span class="nt">report-uri</span> <span class="nt">https</span><span class="o">://&lt;</span><span class="nt">honeybadger</span> <span class="nt">host</span><span class="o">&gt;/</span><span class="nt">api</span><span class="o">/</span><span class="nt">beacon</span><span class="o">/&lt;</span><span class="nt">target</span> <span class="nt">guid</span><span class="o">&gt;/</span><span class="nt">Content-Security-Policy</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>X-XSS-Protection: 0
+Content-Security-Policy-Report-Only: &lt;policy&gt;; report-uri https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/Content-Security-Policy
+</code></pre></div>
 
 
 <p>The <code>X-XSS-Protection</code> header disables the browser-side XSS protection before the Content Security Policy is configured. This is because browser-side XSS protection will trigger before the Content Security Policy and prevent the agent from working.</p>
 <p>The XSS-Protection agent reports any time the built-in browser XSS protection mechanism triggers, which indicates the presence of a known XSS attack. The following header creates the XSS-Protection agent:</p>
-<div class="codehilite"><pre><span></span><span class="nt">X-XSS-Protection</span><span class="o">:</span> <span class="nt">1</span><span class="o">;</span> <span class="nt">report</span><span class="o">=</span><span class="nt">https</span><span class="o">://&lt;</span><span class="nt">honeybadger</span> <span class="nt">host</span><span class="o">&gt;/</span><span class="nt">api</span><span class="o">/</span><span class="nt">beacon</span><span class="o">/&lt;</span><span class="nt">target</span> <span class="nt">guid</span><span class="o">&gt;/</span><span class="nt">XSS-Protection</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>X-XSS-Protection: 1; report=https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/XSS-Protection
+</code></pre></div>
 
 
 <p>These agents cannot be used together. Using them together will only allow the XSS-Protection agent to trigger, as described above. I recommend the Content-Security-Policy agent for any environment that already has it implemented, and the XSS-Protection agent for those that don't. However, be mindful that the headers these agents use are only supported by some browsers. To see the Content-Security-Policy agent in action, check out a target demo page on any deployed HoneyBadger instance.</p>

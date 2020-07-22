@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -57,22 +55,22 @@
 
 <p>I tried a bunch of tools to assist me in enumerating information from the server. LdapMiner, LDAP Explorer, ldapsearch, and JXplorer to name a few. The only tool that properly leveraged the empty base object and NULL BIND vulnerabilities to produce useful results was <a href="http://jxplorer.org/">JXplorer</a>.</p>
 <p>The LDAP server administrator did do one thing right. He limited the responses to all LDAP queries to 25 results. Whether or not it was intentional, I don't know, but it made it painful to extract large chunks of data. Basically, it forced attackers to use many alphabetical queries with wildcards to enumerate all entries, much like exploiting a blind SQL Injection vulnerability.</p>
-<div class="codehilite"><pre><span></span>ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;cn=aa*&quot;</span>
+<div class="codehilite"><pre><span></span><code>ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;cn=aa*&quot;</span>
 ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;cn=ab*&quot;</span>
 ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;cn=ac*&quot;</span>
 ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;cn=ad*&quot;</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Not even JXplorer could do this, and was restricted to extracting only the first 25 nodes in each identified node throughout the directory tree. The thing that set JXplorer apart was that while some of the other tools pulled the first 25 nodes from the directory using the empty base object and NULL BIND, JXplorer crawled the tree and continued to pull the first 25 nodes from each of the child nodes it discovered. This was a good start, but I would have liked to dump the entire directory, and getting data in a useful form was cumbersome. I didn't have time to write a tool (on my list of things to do), so instead of dumping the directory, I used the empty base object and NULL BIND vulnerabilities to validate email addresses harvested with Recon-ng. Here are the commands I used to do that using the ldapsearch utility.</p>
 <p>Verify single email address:</p>
-<div class="codehilite"><pre><span></span>ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=&lt;email_address&gt;&quot;</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=&lt;email_address&gt;&quot;</span>
+</code></pre></div>
 
 
 <p>Verify list of email addresses:</p>
-<div class="codehilite"><pre><span></span><span class="k">for</span> line in <span class="k">$(</span>cat list.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=</span><span class="nv">$line</span><span class="s2">&quot;</span> <span class="p">|</span> grep mail: <span class="p">|</span> cut -d<span class="s2">&quot; &quot;</span> -f2<span class="p">;</span> <span class="k">done</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span> line in <span class="k">$(</span>cat list.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=</span><span class="nv">$line</span><span class="s2">&quot;</span> <span class="p">|</span> grep mail: <span class="p">|</span> cut -d<span class="s2">&quot; &quot;</span> -f2<span class="p">;</span> <span class="k">done</span>
+</code></pre></div>
 
 
 <p>The danger of an Internet facing LDAP server configured like this should be fairly obvious. Spammers and attackers have access to the full name and email address of every person in your environment that has an account in Active Directory. This will drastically increase the amount of spam your organization receives and the likelihood of phishing attacks. In addition, if you have web facing VPNs or web applications, you are giving attackers part of what is required to authenticate. This is a very bad idea.</p>

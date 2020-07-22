@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -74,13 +72,13 @@
 <p>While in theory I love this idea, it wasn't nearly as awesome in practice. After a little bit of fooling around, I couldn't get it to trigger in any of my accounts anymore. Gmail learned something about my attempts to replicate the attack and stopped asking about the spam when clicking the "Report Spam" button. Even after going into the spam folder and marking the message as "Not Spam." I suspect when you report something as spam once, Gmail remembers and doesn't ask whether you want to unsubscribe or just filter the next time you click the "Report Spam" button. It just filters it.</p>
 <h3>Verifying Targets</h3>
 <p>Before this information is at all useful, an attacker must validate whether or not their target is using one of Google's email services. Detecting Gmail is easy. Just look for the <code>@gmail.com</code> domain in the email address. Detecting G Suite isn't much harder. Do a MX record lookup for the email addresses domain (hostname actually) via DNS and examine the mail server addresses. Below is an example of using dig to conduct such a lookup for the <code>tim.tomes@practisec.com</code> email address:</p>
-<div class="codehilite"><pre><span></span>$ dig -t MX practisec.com +short
-<span class="m">1</span> aspmx.l.google.com.
-<span class="m">5</span> alt1.aspmx.l.google.com.
-<span class="m">5</span> alt2.aspmx.l.google.com.
-<span class="m">10</span> alt3.aspmx.l.google.com.
-<span class="m">10</span> alt4.aspmx.l.google.com.
-</pre></div>
+<div class="codehilite"><pre><span></span><code>$ dig -t MX practisec.com +short
+1 aspmx.l.google.com.
+5 alt1.aspmx.l.google.com.
+5 alt2.aspmx.l.google.com.
+10 alt3.aspmx.l.google.com.
+10 alt4.aspmx.l.google.com.
+</code></pre></div>
 
 
 <p>As you can see, it quickly becomes obvious who the target is using for a mail provider. Any domain other than <code>gmail.com</code> using Google's mail servers is a G Suite user.</p>

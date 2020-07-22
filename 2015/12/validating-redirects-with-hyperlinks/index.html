@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -56,57 +54,57 @@
 <!-- READMORE -->
 
 <p>The remediated redirect logic contained a call to a function that consumed the value of the <code>next</code> parameter and the hostname of the current location.</p>
-<div class="codehilite"><pre><span></span>document.location = validate(next, document.location.hostname)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>document.location = validate(next, document.location.hostname)
+</code></pre></div>
 
 
 <p>Pretty standard stuff. The interesting bit was in the called function.</p>
-<div class="codehilite"><pre><span></span><span class="kd">function</span> <span class="nx">validate</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span> <span class="k">return</span> <span class="nx">r</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">r</span><span class="p">.</span><span class="nx">hostname</span> <span class="o">===</span> <span class="nx">c</span> <span class="o">?</span> <span class="nx">n</span> <span class="o">:</span> <span class="s2">&quot;/&quot;</span><span class="p">;</span> <span class="p">}</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>function validate(n, c) { var r = document.createElement(&quot;a&quot;); return r.href = n, r.hostname === c ? n : &quot;/&quot;; }
+</code></pre></div>
 
 
 <p>Which can be simplified to...</p>
-<div class="codehilite"><pre><span></span><span class="kd">function</span> <span class="nx">validate</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span> <span class="nx">r</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">n</span><span class="p">;</span> <span class="k">return</span> <span class="nx">r</span><span class="p">.</span><span class="nx">hostname</span> <span class="o">===</span> <span class="nx">c</span> <span class="o">?</span> <span class="nx">n</span> <span class="o">:</span> <span class="s2">&quot;/&quot;</span><span class="p">;</span> <span class="p">}</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>function validate(n, c) { var r = document.createElement(&quot;a&quot;); r.href = n; return r.hostname === c ? n : &quot;/&quot;; }
+</code></pre></div>
 
 
 <p>Which can be further simplified to...</p>
-<div class="codehilite"><pre><span></span><span class="kd">function</span> <span class="nx">validate</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span> <span class="nx">r</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">n</span><span class="p">;</span> <span class="k">if</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">hostname</span> <span class="o">===</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">r</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span> <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;/&quot;</span> <span class="p">;</span> <span class="p">}}</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code>function validate(n, c) { var r = document.createElement(&quot;a&quot;); r.href = n; if(r.hostname === c) { return r.href; } else { return &quot;/&quot; ; }}
+</code></pre></div>
 
 
 <p>I am including several versions of the same code because the first version can be quite confusing to folks that aren't familiar with the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_Operator">Comma</a> operator.</p>
 <p>Just in case you haven't picked up on it yet, let's look at exactly what is going on here. I am using the Chrome Developer Tools JavaScript console on the <a href="https://nvisium.com">nVisium</a> web page to demonstrate this if you want to follow along. Paste one of the functions above into the console and assign a value to a variable called <code>next</code>.</p>
-<div class="codehilite"><pre><span></span>var next = &quot;http://lanmaster53.com&quot;
-</pre></div>
+<div class="codehilite"><pre><span></span><code>var next = &quot;http://lanmaster53.com&quot;
+</code></pre></div>
 
 
 <p>Now let's follow the logic of the first simplified version of the <code>validate</code> function to see how this works. The function first creates a hyperlink tag. Don't type the following into the console. I'll let you know when we're ready to continue with the demonstration.</p>
-<div class="codehilite"><pre><span></span>var r = document.createElement(&quot;a&quot;)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>var r = document.createElement(&quot;a&quot;)
+</code></pre></div>
 
 
 <p>Hyperlink tags accept an attribute called <code>href</code> that determines the destination of the browser when the hyperlink is clicked. The function then sets the <code>href</code> attribute of the dynamically created hyperlink to the value of the <code>next</code> parameter.</p>
-<div class="codehilite"><pre><span></span>r.href = n
-</pre></div>
+<div class="codehilite"><pre><span></span><code>r.href = n
+</code></pre></div>
 
 
 <p>This is where it gets interesting. Like the <code>document</code> object itself, the hyperlink tag object has a <code>hostname</code> property. Once the hyperlink's <code>href</code> attribute has a value, the <code>hostname</code> property will contain a nicely parsed hostname for the assigned <code>href</code>. What the function is essentially doing is using the browser's builtin parser to break apart URLs in a consistent manner. Pretty cool, right?</p>
 <p>All that's left for the function to do is compare the hostname of the document (provided to the function) and the hostname derived from the dynamically created hyperlink to determine whether the value of the <code>next</code> parameter is a safe location, in this case local to the application.</p>
-<div class="codehilite"><pre><span></span>return r.hostname === c ? n : &quot;/&quot;
-</pre></div>
+<div class="codehilite"><pre><span></span><code>return r.hostname === c ? n : &quot;/&quot;
+</code></pre></div>
 
 
 <p>This is a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator">Ternary</a> operator that accepts a conditional expression that evaluates to <code>true</code> or <code>false</code> and returns one of two expressions based on the result. In this case, the function returns the value of the <code>next</code> parameter if the hostnames match, or the root of the web site if they do not, effectively restricting all redirects to locations local to the application.</p>
 <p>Let's test the validation function with our values. Enter the following into the console to continue the demonstration.</p>
-<div class="codehilite"><pre><span></span>validate(next, document.location.hostname)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>validate(next, document.location.hostname)
+</code></pre></div>
 
 
 <p>The function should have returned <code>/</code>, which, when assigned to <code>document.location</code> would redirect the browser to the root of the website. Now change the value of <code>next</code> to something local and test.</p>
-<div class="codehilite"><pre><span></span>var next = &quot;https://nvisium.com/blog&quot;
+<div class="codehilite"><pre><span></span><code>var next = &quot;https://nvisium.com/blog&quot;
 validate(next, document.location.hostname)
-</pre></div>
+</code></pre></div>
 
 
 <p>The function should have returned the value of <code>next</code>.</p>

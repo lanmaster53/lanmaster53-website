@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -60,7 +58,7 @@
 <p>As security professionals, we are in the business of helping organizations make risk-based decisions. Seeing as risk is a product of impact and likelihood, without knowing the true impact of a vulnerability, we are unable to properly calculate the risk. As someone that frequently develops using the Flask framework, James' research prompted me to determine the full impact of SSTI on applications developed using the Flask/Jinja2 development stack. This article is the result of that research. If you want a little more context before diving in, check out <a href="https://nvisium.com/blog/2015/12/07/injecting-flask/">this article</a> by <a href="https://twitter.com/_aur3lius">Ryan Reid</a> that provides a bit more context to what SSTI looks like in Flask/Jinja2 applications.</p>
 <h3>Setup</h3>
 <p>In order to assess SSTI in the Flask/Jinja2 stack, let's build a small proof-of-concept application that contains the following view.</p>
-<div class="codehilite"><pre><span></span><span class="nd">@app.errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">page_not_found</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
     <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;{</span><span class="si">%%</span><span class="s1"> extends &quot;layout.html&quot; </span><span class="si">%%</span><span class="s1">}</span>
 <span class="s1">{</span><span class="si">%%</span><span class="s1"> block body </span><span class="si">%%</span><span class="s1">}</span>
@@ -71,7 +69,7 @@
 <span class="s1">{</span><span class="si">%%</span><span class="s1"> endblock </span><span class="si">%%</span><span class="s1">}</span>
 <span class="s1">&#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">render_template_string</span><span class="p">(</span><span class="n">template</span><span class="p">),</span> <span class="mi">404</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>The scenario behind this code is that the developer thought it would be silly to have a separate template file for a small 404 page, so he created a template string within the 404 view function. The developer wanted to echo back to the user the URL which resulted in the error, but rather than pass the URL to the template context via the <code>render_template_string</code> function, the developer chose to use string formatting to dynamically add the URL to the template string. Pretty reasonable, right? I've seen worse.</p>
@@ -84,7 +82,7 @@
 <p>We have now discovered SSTI in the target application.</p>
 <h3>Analysis</h3>
 <p>Now that we have a working exploit, the next step is to dig into the template context and find out what is available to an attacker of the application through the SSTI vulnerability. Modify the vulnerable view function of the proof-of-concept application to look as follows.</p>
-<div class="codehilite"><pre><span></span><span class="nd">@app.errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">page_not_found</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
     <span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;{</span><span class="si">%%</span><span class="s1"> extends &quot;layout.html&quot; </span><span class="si">%%</span><span class="s1">}</span>
 <span class="s1">{</span><span class="si">%%</span><span class="s1"> block body </span><span class="si">%%</span><span class="s1">}</span>
@@ -99,7 +97,7 @@
         <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="p">,</span>
         <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">,</span>
     <span class="p">),</span> <span class="mi">404</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>The call to <code>render_template_string</code> now includes the <code>dir</code>, <code>help</code>, and <code>locals</code> built-ins, which adds them to the template context so we can use them to conduct introspection through the vulnerability and find out what is programmatically available to the template.</p>
@@ -123,7 +121,7 @@
 <p><a href="/static/images/posts/ssti_flask_4.png"><img alt="" src="/static/images/posts/ssti_flask_4.png" /></a></p>
 <p>And don't think that storing these configuration items in environment variables protects against this disclosure. The <code>config</code> object contains all of the configuration values AFTER they have been resolved by the framework.</p>
 <p>Our most interesting discovery also comes from introspecting the <code>config</code> object. While the <code>config</code> object is dictionary-like, it is a subclass that contains several unique methods: <code>from_envvar</code>, <code>from_object</code>, <code>from_pyfile</code>, and <code>root_path</code>. Finally, an opportunity to dig into source code. Below is the code for the <code>from_object</code> method of the <code>Config</code> class, <code>flask/config.py</code>.</p>
-<div class="codehilite"><pre><span></span>    <span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Updates the values from the given object.  An object can be of one</span>
 <span class="sd">        of the following two types:</span>
 
@@ -154,11 +152,11 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>We see here that if we pass a string object to the <code>from_object</code> method, it passes the string to <code>import_string</code> method from the <code>werkzeug/utils.py</code> module, which attempts to import anything from the path whose name matches and return it.</p>
-<div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Imports an object based on a string.  This is useful if you want to</span>
 <span class="sd">    use import paths as endpoints or something similar.  An import path can</span>
 <span class="sd">    be specified either in dotted notation (``xml.sax.saxutils.escape``)</span>
@@ -186,7 +184,7 @@
 
         <span class="n">module_name</span><span class="p">,</span> <span class="n">obj_name</span> <span class="o">=</span> <span class="n">import_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">[</span><span class="n">obj_name</span><span class="p">])</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">obj_name</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="c1"># support importing modules not yet set up by the parent module</span>
             <span class="c1"># (or package for that matter)</span>
@@ -203,7 +201,7 @@
                 <span class="n">ImportStringError</span><span class="p">,</span>
                 <span class="n">ImportStringError</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">e</span><span class="p">),</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>The <code>from_object</code> method then adds all attributes of the newly loaded module whose variable name is all uppercase to the <code>config</code> object. The interesting thing about this is that attributes added to the <code>config</code> object maintain their type, which means functions added to the <code>config</code> object can be called from the template context via the <code>config</code> object. To demonstrate this, inject <code>{{ config.items() }}</code> into the SSTI vulnerability and note the current configuration entries.</p>
@@ -212,13 +210,13 @@
 <p><a href="/static/images/posts/ssti_flask_6.png"><img alt="" src="/static/images/posts/ssti_flask_6.png" /></a></p>
 <p>Any callable items added to the <code>config</code> object can now be called through the SSTI vulnerability. The next step is finding functionality within the available importable modules that can be manipulated to break out of the template sandbox.</p>
 <p>The following script replicates the behavior of <code>from_object</code> and <code>import_string</code> and analyzes the entire Python Standard Library for importable items.</p>
-<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
 
 <span class="kn">from</span> <span class="nn">stdlib_list</span> <span class="kn">import</span> <span class="n">stdlib_list</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">import_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -231,7 +229,7 @@
 
         <span class="n">module_name</span><span class="p">,</span> <span class="n">obj_name</span> <span class="o">=</span> <span class="n">import_name</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="p">[</span><span class="n">obj_name</span><span class="p">])</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">obj_name</span><span class="p">])</span>
         <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
             <span class="c1"># support importing modules not yet set up by the parent module</span>
             <span class="c1"># (or package for that matter)</span>
@@ -265,7 +263,7 @@
             <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
                 <span class="n">conflen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[{0}] {1} =&gt; {2}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">conflen</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">])))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">{0}</span><span class="s1">] </span><span class="si">{1}</span><span class="s1"> =&gt; </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">conflen</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">])))</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="c1"># parse arguments</span>
@@ -274,17 +272,17 @@
     <span class="n">args</span> <span class="o">=</span> <span class="n">ap</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="c1"># creat a scanner instance</span>
     <span class="n">sm</span> <span class="o">=</span> <span class="n">ScanManager</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[{module}] {config key} =&gt; {config value}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">[</span><span class="si">{module}</span><span class="s1">] {config key} =&gt; {config value}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">sm</span><span class="o">.</span><span class="n">scan_source</span><span class="p">()</span>
 
 <span class="c1"># start of main code</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Below is some abbreviated output from the script when ran against Python 2.7, including the most interesting importable items.</p>
-<div class="codehilite"><pre><span></span>(venv)macbook-pro:search lanmaster$ ./search.py 2.7
+<div class="codehilite"><pre><span></span><code>(venv)macbook-pro:search lanmaster$ ./search.py 2.7
 
 [{module}] {config key} =&gt; {config value}
 
@@ -310,7 +308,7 @@
 [xml.etree.ElementTree] XML        =&gt; &lt;function XML at 0x10d138de8&gt;
 [xml.etree.ElementTree] XMLID      =&gt; &lt;function XMLID at 0x10d13e050&gt;
 ...
-</pre></div>
+</code></pre></div>
 
 
 <p>From here, we apply our methodology to the interesting items in hopes of finding something we can use to escape the template sandbox.</p>

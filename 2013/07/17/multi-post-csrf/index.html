@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -57,7 +55,7 @@
 
 <p>Let's say you encounter a situation where an attack requires multiple CSRFs in order to conduct some sort of undesirable action i.e. transfer funds between accounts or manipulate a forgot password system. This is easily accomplished if the target accepts GET requests. The attacker can set up a couple of dummy images and launch multiple CSRF requests with ease. However, what if the target application only accepts POST requests? While this complicates things, the attack can still be accomplished as long as the attacker doesn't mind engaging the target user once for each POST request. But what if the attacker has one opportunity to engage the target user? This is the situation that Ethan and I were faced with.</p>
 <p>Rather than blindly explain the technique, let's consider the following code that Ethan provides as a template for the attack:</p>
-<div class="codehilite"><pre><span></span><span class="cp">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;</span>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;</span>
 <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">script</span> <span class="na">language</span><span class="o">=</span><span class="s">&quot;javascript&quot;</span><span class="p">&gt;</span>
@@ -92,7 +90,7 @@
 
     <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Let's break it down.</p>
@@ -100,12 +98,12 @@
 <p>In the template code scenario we need to submit two forms to carry out the attack, so we place 2 forms on the page: "csrfForm1" and "csrfForm2". The inputs in the template are blank, but this is where you would put each of the parameters required for the form. Inputs with a type of "hidden" will be most effective. Also, there's no need for a "submit" input type, as we will be using JavaScript to do so.</p>
 <p>Next, look at the "head" of the template. We write some JavaScript that will submit both forms upon the page loading with the "onload" event. But wait a second. Didn't we just say that we can't submit two forms on one page? Yes, we did. Take another look in the "body" of the template. You'll notice that there are two iframes at the bottom named "csrfIframe1" and "csrfIframe2". Then look at the forms again and notice that their "target" attributes are set for the respective iframes. This is the trick. By submitting the forms within the target of multiple iframes, we maintain control over the primary page and can continue to submit forms on behalf of the target. Totally cool, right? Also, by sizing the iframe to be invisible, the user continues to see the content of the current page unchanged as the attack plays out.</p>
 <p>While this was good enough to solve my problem, Ethan ran into another issue in his situation. His target application had a JavaScript frame busting countermeasure that prevented this attack by hijacking any window that attempted to frame the application. The frame busting JavaScript was similar to this:</p>
-<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span><span class="p">&gt;</span>
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span><span class="p">&gt;</span>
 <span class="k">if</span> <span class="p">(</span><span class="nx">top</span> <span class="o">!=</span> <span class="nx">self</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">top</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">location</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>As the above frame busting JavaScript hijacks the top window, it triggers the top window's "unload" event. Ethan discovered that he could use the "onbeforeunload" event in the top window to ask the user if they wanted to stay on the page. If the user elected to stay, then the unloading of the page would halt, the application would to load in the frame as normal, and the next form would POST. I don't know about you, but when I'm on a page that all the sudden tries to redirect somewhere else, I click the "Stay on this page" button. The result of Ethan's counter-countermeasure is that the attack will ask the user to stay on the page for each form that POSTs through an iframe whose target application is protected by the frame busting JavaScript. As long as the user clicks "Stay on this page", the attack resumes. Pretty handy stuff.</p>

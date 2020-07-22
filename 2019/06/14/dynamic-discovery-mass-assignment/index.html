@@ -6,7 +6,6 @@
         <meta name="author" content="Tim Tomes">
         <meta name="description" content="Articles, information, and projects related to development and web application security.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="alternate" href="/atom.xml" title="Recent Articles" type="application/atom+xml">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
         <link rel="stylesheet" href="/static/css/normalize.css">
         <link rel="stylesheet" href="/static/css/skeleton.css">
@@ -22,11 +21,10 @@
                         <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
                                             <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
                                             <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
-                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
                                             <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
                                             <li><a href="/contact/"><img src="/static/images/meta/email.png"></a></li>
-                        <li><a href="/atom.xml"><img src="/static/images/meta/feed.png"></a></li>
                     </ul>
                 </div>
                 <div class="eight columns nav">
@@ -58,46 +56,46 @@
 <h3>What is Mass Assignment?</h3>
 <p>There's this thing called Mass Assignment. It has other names, which I'll mention later, but for the purposes of this article, we'll call it Mass Assignment. It was originally discovered as an issue with Ruby on Rails active record. It exists where request parameters are bound directly to model objects that are ultimately used to create or update a record in a database. To understand what that actually means, let me back up a bit and explain a few things. In the Model View Controller (MVC) development architectural pattern (most common today), developers often use these things called Object Relational Mappers (ORM). Basically, an ORM abstracts (adds a layer of code) to database interaction so that instead of writing raw SQL queries that Create, Read, Update or Delete (CRUD) data in a table in a database, the developer interacts with objects that are instances of a model. This has many benefits. One being that instead of dynamically mixing user input with pre-built SQL queries, which often leads to SQL injection, user input is passed to the ORM, which safely handles it and prevents injection attacks. In order to make it easier to understand what exactly a model is, think of it as the table schema for a table in a database. It describes the columns (attributes) that make up the rows (objects) in a table (model).</p>
 <p>For example, let's say our table (model) applies this schema:</p>
-<div class="codehilite"><pre><span></span>+-----------------+
+<div class="codehilite"><pre><span></span><code>+-----------------+
 |      users      |
 +-----------------+
 | username | TEXT |
 | password | TEXT |
 | role     | TEXT |
 +-----------------+
-</pre></div>
+</code></pre></div>
 
 
 <p>Using an ORM, instead of making a raw query to insert a record into the table like:</p>
-<div class="codehilite"><pre><span></span>INSERT INTO users (username, password, role) VALUES (&#39;lanmaster53&#39;, &#39;correcthorsebatterystaple&#39;, &#39;user&#39;);
-</pre></div>
+<div class="codehilite"><pre><span></span><code>INSERT INTO users (username, password, role) VALUES (&#39;lanmaster53&#39;, &#39;correcthorsebatterystaple&#39;, &#39;user&#39;);
+</code></pre></div>
 
 
 <p>The developer can create a new instance of the model (row) and assign values to its attributes (columns) like:</p>
-<div class="codehilite"><pre><span></span>user = User()
+<div class="codehilite"><pre><span></span><code>user = User()
 user = user.username=&#39;lanmaster53&#39;
 user = user.password=&#39;correcthorsebatterystaple&#39;
 user = user.role=&#39;user&#39;
 db.add(user)
 db.commit()
-</pre></div>
+</code></pre></div>
 
 
 <p>or:</p>
-<div class="codehilite"><pre><span></span>user = User(username=&#39;lanmaster53&#39;, password=&#39;correcthorsebatterystaple&#39;, role=&#39;user&#39;)
+<div class="codehilite"><pre><span></span><code>user = User(username=&#39;lanmaster53&#39;, password=&#39;correcthorsebatterystaple&#39;, role=&#39;user&#39;)
 db.add(user)
 db.commit()
-</pre></div>
+</code></pre></div>
 
 
 <p>And a new row is made in the table with the provided attribute values in the corresponding column. All of these examples effectively do the same thing. Hopefully this makes sense, because this is where the issue exists. Let's move forward.</p>
 <p>The attributes in the above code blocks (username, password and role) could also be parameters in a request. Consider the following POST payload:</p>
-<div class="codehilite"><pre><span></span>username=lanmaster53&amp;password=correcthorsebatterystaple&amp;role=user
-</pre></div>
+<div class="codehilite"><pre><span></span><code>username=lanmaster53&amp;password=correcthorsebatterystaple&amp;role=user
+</code></pre></div>
 
 
 <p>In modern frameworks, a developer would access these values on the server from the request using something like <code>request.form</code>, which is an array of the name-value pairs. What's also possible in modern frameworks, is the ability to pass an array to a function as is, while signaling to the system that the array should be expanded into name-value pairs and treated as parameters. For example, take the following block of code:</p>
-<div class="codehilite"><pre><span></span>def example(x, y, z):
+<div class="codehilite"><pre><span></span><code>def example(x, y, z):
     #do something with x, y, and z
 
 array = {
@@ -105,23 +103,23 @@ array = {
     &#39;y&#39;: 2,
     &#39;z&#39;: 3
 }
-</pre></div>
+</code></pre></div>
 
 
 <p>This function could be invoked like:</p>
-<div class="codehilite"><pre><span></span>example(x=array[x], y=array[y], z=array[z])
-</pre></div>
+<div class="codehilite"><pre><span></span><code>example(x=array[x], y=array[y], z=array[z])
+</code></pre></div>
 
 
 <p>But it would be a heck of a lot easier to do something like:</p>
-<div class="codehilite"><pre><span></span>example(**array)
-</pre></div>
+<div class="codehilite"><pre><span></span><code>example(**array)
+</code></pre></div>
 
 
 <p>Which is shorthand for the previous example. Such a nice feature, right!? It exists pretty much everywhere.</p>
 <p>Now look back at our POST payload example above. Some of you may have already picked up on this, but what kind of application allows the user to control what role they get? Not a good one, right? Obviously it depends on the context, but this isn't something that should normally be done. So the POST payload would probably look more like:</p>
-<div class="codehilite"><pre><span></span>username=lanmaster53&amp;password=correcthorsebatterystaple
-</pre></div>
+<div class="codehilite"><pre><span></span><code>username=lanmaster53&amp;password=correcthorsebatterystaple
+</code></pre></div>
 
 
 <p>Notice the lack of <code>role</code> parameter. The developer is likely setting the <code>role</code> attribute to <code>user</code> on the server because that should be the default state of every new user. That's a good thing. As we already established, the role shouldn't be controlled by the user. But this is where it all comes together. What if the application is using the really nice feature from above (we'll call it Mass Assignment, Autobinding, or Object Injection)? Does it not become possible that we could guess the <code>role=admin</code> parameter and value and pass that in with the rest of the payload to give ourselves a higher privilege role? Yes! And that's why this is a vulnerability.</p>
@@ -149,12 +147,12 @@ array = {
 <p>As always, I don't like explaining why something is broken without providing a means to do it safely. There are a few ways to create or update model objects safely.</p>
 <p>First, validate input. Applications should always validate input, whether using it as a security control or not. However, in this case, validate provided parameters against a list of expected model attributes. Validation can be done by blacklisting (nonassignable attributes) or whitelisting (assignable attributes), but the validator must be updated any time the affected model changes, and will be unique for every form.</p>
 <p>Second, explicitly bind parameters to the model object. Given the example above, it would look something like this:</p>
-<div class="codehilite"><pre><span></span>user = User()
+<div class="codehilite"><pre><span></span><code>user = User()
 user = user.username=request.form[&#39;username&#39;]
 user = user.password=request.form[&#39;password&#39;]
 db.add(user)
 db.commit()
-</pre></div>
+</code></pre></div>
 
 
 <p>Notice the application is not blindly trusting user input with regards to parameter names (username and password). The application avoids using the binding shortcut and does things explicitly.</p>
