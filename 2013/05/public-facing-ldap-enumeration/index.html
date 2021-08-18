@@ -58,21 +58,18 @@ ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class=
 ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;cn=ad*&quot;</span>
 </code></pre></div>
 
-
 <p>Not even JXplorer could do this, and was restricted to extracting only the first 25 nodes in each identified node throughout the directory tree. The thing that set JXplorer apart was that while some of the other tools pulled the first 25 nodes from the directory using the empty base object and NULL BIND, JXplorer crawled the tree and continued to pull the first 25 nodes from each of the child nodes it discovered. This was a good start, but I would have liked to dump the entire directory, and getting data in a useful form was cumbersome. I didn't have time to write a tool (on my list of things to do), so instead of dumping the directory, I used the empty base object and NULL BIND vulnerabilities to validate email addresses harvested with Recon-ng. Here are the commands I used to do that using the ldapsearch utility.</p>
 <p>Verify single email address:</p>
 <div class="codehilite"><pre><span></span><code>ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=&lt;email_address&gt;&quot;</span>
 </code></pre></div>
 
-
 <p>Verify list of email addresses:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">for</span> line in <span class="k">$(</span>cat list.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=</span><span class="nv">$line</span><span class="s2">&quot;</span> <span class="p">|</span> grep mail: <span class="p">|</span> cut -d<span class="s2">&quot; &quot;</span> -f2<span class="p">;</span> <span class="k">done</span>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span> line <span class="k">in</span> <span class="k">$(</span>cat list.txt<span class="k">)</span><span class="p">;</span> <span class="k">do</span> ldapsearch -h &lt;ldap_host&gt; -p <span class="m">389</span> -x -b <span class="s2">&quot;O=&lt;known_dn&gt;&quot;</span> <span class="s2">&quot;mail=</span><span class="nv">$line</span><span class="s2">&quot;</span> <span class="p">|</span> grep mail: <span class="p">|</span> cut -d<span class="s2">&quot; &quot;</span> -f2<span class="p">;</span> <span class="k">done</span>
 </code></pre></div>
-
 
 <p>The danger of an Internet facing LDAP server configured like this should be fairly obvious. Spammers and attackers have access to the full name and email address of every person in your environment that has an account in Active Directory. This will drastically increase the amount of spam your organization receives and the likelihood of phishing attacks. In addition, if you have web facing VPNs or web applications, you are giving attackers part of what is required to authenticate. This is a very bad idea.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

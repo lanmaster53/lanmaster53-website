@@ -54,60 +54,50 @@
 <div class="codehilite"><pre><span></span><code>document.location = validate(next, document.location.hostname)
 </code></pre></div>
 
-
 <p>Pretty standard stuff. The interesting bit was in the called function.</p>
 <div class="codehilite"><pre><span></span><code>function validate(n, c) { var r = document.createElement(&quot;a&quot;); return r.href = n, r.hostname === c ? n : &quot;/&quot;; }
 </code></pre></div>
-
 
 <p>Which can be simplified to...</p>
 <div class="codehilite"><pre><span></span><code>function validate(n, c) { var r = document.createElement(&quot;a&quot;); r.href = n; return r.hostname === c ? n : &quot;/&quot;; }
 </code></pre></div>
 
-
 <p>Which can be further simplified to...</p>
 <div class="codehilite"><pre><span></span><code>function validate(n, c) { var r = document.createElement(&quot;a&quot;); r.href = n; if(r.hostname === c) { return r.href; } else { return &quot;/&quot; ; }}
 </code></pre></div>
-
 
 <p>I am including several versions of the same code because the first version can be quite confusing to folks that aren't familiar with the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_Operator">Comma</a> operator.</p>
 <p>Just in case you haven't picked up on it yet, let's look at exactly what is going on here. I am using the Chrome Developer Tools JavaScript console on the <a href="https://nvisium.com">nVisium</a> web page to demonstrate this if you want to follow along. Paste one of the functions above into the console and assign a value to a variable called <code>next</code>.</p>
 <div class="codehilite"><pre><span></span><code>var next = &quot;http://lanmaster53.com&quot;
 </code></pre></div>
 
-
 <p>Now let's follow the logic of the first simplified version of the <code>validate</code> function to see how this works. The function first creates a hyperlink tag. Don't type the following into the console. I'll let you know when we're ready to continue with the demonstration.</p>
 <div class="codehilite"><pre><span></span><code>var r = document.createElement(&quot;a&quot;)
 </code></pre></div>
 
-
 <p>Hyperlink tags accept an attribute called <code>href</code> that determines the destination of the browser when the hyperlink is clicked. The function then sets the <code>href</code> attribute of the dynamically created hyperlink to the value of the <code>next</code> parameter.</p>
 <div class="codehilite"><pre><span></span><code>r.href = n
 </code></pre></div>
-
 
 <p>This is where it gets interesting. Like the <code>document</code> object itself, the hyperlink tag object has a <code>hostname</code> property. Once the hyperlink's <code>href</code> attribute has a value, the <code>hostname</code> property will contain a nicely parsed hostname for the assigned <code>href</code>. What the function is essentially doing is using the browser's builtin parser to break apart URLs in a consistent manner. Pretty cool, right?</p>
 <p>All that's left for the function to do is compare the hostname of the document (provided to the function) and the hostname derived from the dynamically created hyperlink to determine whether the value of the <code>next</code> parameter is a safe location, in this case local to the application.</p>
 <div class="codehilite"><pre><span></span><code>return r.hostname === c ? n : &quot;/&quot;
 </code></pre></div>
 
-
 <p>This is a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_Operator">Ternary</a> operator that accepts a conditional expression that evaluates to <code>true</code> or <code>false</code> and returns one of two expressions based on the result. In this case, the function returns the value of the <code>next</code> parameter if the hostnames match, or the root of the web site if they do not, effectively restricting all redirects to locations local to the application.</p>
 <p>Let's test the validation function with our values. Enter the following into the console to continue the demonstration.</p>
 <div class="codehilite"><pre><span></span><code>validate(next, document.location.hostname)
 </code></pre></div>
-
 
 <p>The function should have returned <code>/</code>, which, when assigned to <code>document.location</code> would redirect the browser to the root of the website. Now change the value of <code>next</code> to something local and test.</p>
 <div class="codehilite"><pre><span></span><code>var next = &quot;https://nvisium.com/blog&quot;
 validate(next, document.location.hostname)
 </code></pre></div>
 
-
 <p>The function should have returned the value of <code>next</code>.</p>
 <p>Using the browser's builtin parser to break apart URLs is pretty darn cool if you ask me. And you aren't limited to the hostname. Hyperlinks also have the <code>origin</code> property if you want to restrict URLs based on similar restrictions enforced by Same-Origin Policy. In any case, I thought this was worth sharing.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

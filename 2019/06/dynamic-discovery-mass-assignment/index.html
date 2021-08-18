@@ -62,11 +62,9 @@
 +-----------------+
 </code></pre></div>
 
-
 <p>Using an ORM, instead of making a raw query to insert a record into the table like:</p>
 <div class="codehilite"><pre><span></span><code>INSERT INTO users (username, password, role) VALUES (&#39;lanmaster53&#39;, &#39;correcthorsebatterystaple&#39;, &#39;user&#39;);
 </code></pre></div>
-
 
 <p>The developer can create a new instance of the model (row) and assign values to its attributes (columns) like:</p>
 <div class="codehilite"><pre><span></span><code>user = User()
@@ -77,19 +75,16 @@ db.add(user)
 db.commit()
 </code></pre></div>
 
-
 <p>or:</p>
 <div class="codehilite"><pre><span></span><code>user = User(username=&#39;lanmaster53&#39;, password=&#39;correcthorsebatterystaple&#39;, role=&#39;user&#39;)
 db.add(user)
 db.commit()
 </code></pre></div>
 
-
 <p>And a new row is made in the table with the provided attribute values in the corresponding column. All of these examples effectively do the same thing. Hopefully this makes sense, because this is where the issue exists. Let's move forward.</p>
 <p>The attributes in the above code blocks (username, password and role) could also be parameters in a request. Consider the following POST payload:</p>
 <div class="codehilite"><pre><span></span><code>username=lanmaster53&amp;password=correcthorsebatterystaple&amp;role=user
 </code></pre></div>
-
 
 <p>In modern frameworks, a developer would access these values on the server from the request using something like <code>request.form</code>, which is an array of the name-value pairs. What's also possible in modern frameworks, is the ability to pass an array to a function as is, while signaling to the system that the array should be expanded into name-value pairs and treated as parameters. For example, take the following block of code:</p>
 <div class="codehilite"><pre><span></span><code>def example(x, y, z):
@@ -102,26 +97,22 @@ array = {
 }
 </code></pre></div>
 
-
 <p>This function could be invoked like:</p>
 <div class="codehilite"><pre><span></span><code>example(x=array[x], y=array[y], z=array[z])
 </code></pre></div>
 
-
 <p>But it would be a heck of a lot easier to do something like:</p>
 <div class="codehilite"><pre><span></span><code>example(**array)
 </code></pre></div>
-
 
 <p>Which is shorthand for the previous example. Such a nice feature, right!? It exists pretty much everywhere.</p>
 <p>Now look back at our POST payload example above. Some of you may have already picked up on this, but what kind of application allows the user to control what role they get? Not a good one, right? Obviously it depends on the context, but this isn't something that should normally be done. So the POST payload would probably look more like:</p>
 <div class="codehilite"><pre><span></span><code>username=lanmaster53&amp;password=correcthorsebatterystaple
 </code></pre></div>
 
-
 <p>Notice the lack of <code>role</code> parameter. The developer is likely setting the <code>role</code> attribute to <code>user</code> on the server because that should be the default state of every new user. That's a good thing. As we already established, the role shouldn't be controlled by the user. But this is where it all comes together. What if the application is using the really nice feature from above (we'll call it Mass Assignment, Autobinding, or Object Injection)? Does it not become possible that we could guess the <code>role=admin</code> parameter and value and pass that in with the rest of the payload to give ourselves a higher privilege role? Yes! And that's why this is a vulnerability.</p>
 <h3>Mass Assignment in Flask</h3>
-<p>Previously, it seems, this issue has only been widely discussed in the context of Ruby on Rails, NodeJS, Java Spring MVC, ASP.NET MVC and PHP. However, when incorporating this topic into <a href="https://www.lanmaster53.com/training/">Practical Web Application Penetration Testing (PWAPT)</a>, I found a realistic way to introduce and exploit the issue in Flask. What you have seen up to this point is Python code and is exactly how this issue manifests itself in a Flask application.</p>
+<p>Previously, it seems, this issue has only been widely discussed in the context of Ruby on Rails, NodeJS, Java Spring MVC, ASP.NET MVC and PHP. However, when incorporating this topic into <a href="https://www.practisec.com/training/">Practical Web Application Penetration Testing (PWAPT)</a>, I found a realistic way to introduce and exploit the issue in Flask. What you have seen up to this point is Python code and is exactly how this issue manifests itself in a Flask application.</p>
 <p>I have not been able to find anywhere else on the Internet that includes Flask in the list of affected frameworks, so <strong>consider this a zero-day release of this information</strong>. I have not mentioned this to the Flask community, and I don't consider this to be an irresponsible disclosure because there's nothing the framework should do about this. These are valid features of both the framework and the ORM (in this case Flask and SQLAlchemy), and developers need to know when, and when not, to use them. More on that in a bit.</p>
 <h3>Dynamic Discovery Methodology</h3>
 <p>After incorporating Mass Assignment into PWAPT, I approached it as something that wasn't really feasible to find dynamically due to the large number of possibilities (parameter names and value data types) and a lack of meaningful responses. Traditionally, servers just drop unrecognized parameters and don't behave any differently as a result. So I've skipped over it when we were short on time, or glazed over it quickly with the reasoning that it required source code to find. But, remember all the way back up at the top of this article where I said I love to teach because I learn things? I recently had enough time to fully cover this issue with a class and a few of my students, Cal B. (@y0ucancallmecal) and Hitesh Khurana (@tesh_kh), fuzzed the vulnerable resource and noticed some things that I think will be universally applicable in finding Mass Assignment issues dynamically, perhaps even by a Dynamic Application Security Testing (DAST) solution (automated scanner).</p>
@@ -151,11 +142,10 @@ db.add(user)
 db.commit()
 </code></pre></div>
 
-
 <p>Notice the application is not blindly trusting user input with regards to parameter names (username and password). The application avoids using the binding shortcut and does things explicitly.</p>
 <p>Lastly, bind to a Data Transfer Object (DTO) before binding to the final object. DTOs are intermediate objects consisting of an assignable subset of the target object's attributes. It acts as a kind of filter. So first, bind the DTO to the untrusted input, then bind the object to the DTO. This provides similar behavior to that of whitelisting parameter names as it will only use the parameters matching the names of expected attributes.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

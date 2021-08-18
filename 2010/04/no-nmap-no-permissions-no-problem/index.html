@@ -66,11 +66,9 @@ ips.txt:
 192.168.1.50
 </code></pre></div>
 
-
 <p>Next, run the following command:</p>
 <div class="codehilite"><pre><span></span><code>for /F &quot;tokens=*&quot; %j in (ips.txt) do @for /F &quot;tokens=*&quot; %i in (ports.txt) do @((echo open %j %i)&amp;(echo quit)) | ftp 2&gt;&amp;1 | find &quot;host&quot; &amp;&amp; @echo %i is open on %j &gt;&gt; results.txt
 </code></pre></div>
-
 
 <p>View the results:</p>
 <div class="codehilite"><pre><span></span><code>type results.txt
@@ -80,11 +78,9 @@ results.txt:
 80 is open on 192.168.1.50
 </code></pre></div>
 
-
 <p>Each open port takes about 30 seconds to complete, and closed ports are instantaneous, but all take a SIGNIFICANT amount of time against a dead host. I would only use this for targeted scanning. Just for known live IP addresses and probing interesting ports. The above method only works on XP, 2003 and Windows 7, not Vista. Vista does not pipe its information to Standard Out or Standard Error, so you can't get to the data to parse it. However, I have come up with a solution. Use the following command:</p>
 <div class="codehilite"><pre><span></span><code>for /F &quot;tokens=*&quot; %j in (ips.txt) do @for /F &quot;tokens=*&quot; %i in (ports.txt) do @echo %j:%i &amp; ((echo open %j %i)&amp;(echo quit)) | ftp
 </code></pre></div>
-
 
 <p>Your output will look something like this:</p>
 <div class="codehilite"><pre><span></span><code>192.168.1.1:22
@@ -101,10 +97,9 @@ Connection closed by remote host.
 &gt; ftp: connect :Connection refused
 </code></pre></div>
 
-
 <p>Any time it says <code>Connection closed by remote host.</code> that means the port was open and timed out.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

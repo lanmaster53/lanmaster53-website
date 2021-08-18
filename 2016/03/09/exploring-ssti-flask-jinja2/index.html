@@ -68,7 +68,6 @@
     <span class="k">return</span> <span class="n">render_template_string</span><span class="p">(</span><span class="n">template</span><span class="p">),</span> <span class="mi">404</span>
 </code></pre></div>
 
-
 <p>The scenario behind this code is that the developer thought it would be silly to have a separate template file for a small 404 page, so he created a template string within the 404 view function. The developer wanted to echo back to the user the URL which resulted in the error, but rather than pass the URL to the template context via the <code>render_template_string</code> function, the developer chose to use string formatting to dynamically add the URL to the template string. Pretty reasonable, right? I've seen worse.</p>
 <p>When exercising this functionality, we see the expected behavior.</p>
 <p><a href="/static/images/posts/ssti_flask_1.png"><img alt="" src="/static/images/posts/ssti_flask_1.png" /></a></p>
@@ -95,7 +94,6 @@
         <span class="nb">locals</span><span class="o">=</span><span class="nb">locals</span><span class="p">,</span>
     <span class="p">),</span> <span class="mi">404</span>
 </code></pre></div>
-
 
 <p>The call to <code>render_template_string</code> now includes the <code>dir</code>, <code>help</code>, and <code>locals</code> built-ins, which adds them to the template context so we can use them to conduct introspection through the vulnerability and find out what is programmatically available to the template.</p>
 <p>Let's pause briefly and talk about what the documentation says about the template context. There are several origins from which objects end up in the template context.</p>
@@ -151,7 +149,6 @@
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">dict</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 </code></pre></div>
 
-
 <p>We see here that if we pass a string object to the <code>from_object</code> method, it passes the string to <code>import_string</code> method from the <code>werkzeug/utils.py</code> module, which attempts to import anything from the path whose name matches and return it.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Imports an object based on a string.  This is useful if you want to</span>
@@ -199,7 +196,6 @@
                 <span class="n">ImportStringError</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">e</span><span class="p">),</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
 </code></pre></div>
-
 
 <p>The <code>from_object</code> method then adds all attributes of the newly loaded module whose variable name is all uppercase to the <code>config</code> object. The interesting thing about this is that attributes added to the <code>config</code> object maintain their type, which means functions added to the <code>config</code> object can be called from the template context via the <code>config</code> object. To demonstrate this, inject <code>{{ config.items() }}</code> into the SSTI vulnerability and note the current configuration entries.</p>
 <p><a href="/static/images/posts/ssti_flask_5.png"><img alt="" src="/static/images/posts/ssti_flask_5.png" /></a></p>
@@ -277,7 +273,6 @@
     <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 
-
 <p>Below is some abbreviated output from the script when ran against Python 2.7, including the most interesting importable items.</p>
 <div class="codehilite"><pre><span></span><code>(venv)macbook-pro:search lanmaster$ ./search.py 2.7
 
@@ -307,7 +302,6 @@
 ...
 </code></pre></div>
 
-
 <p>From here, we apply our methodology to the interesting items in hopes of finding something we can use to escape the template sandbox.</p>
 <p>TL;DR, I was unable to find a sandbox escape through any of these items. But for the sake of sharing research, below is additional information about my approach to a few of them. Also note that I did not exhaust all possibilities. There is certainly opportunity for further research.</p>
 <h4>ftplib</h4>
@@ -321,7 +315,7 @@
 <h3>Conclusion</h3>
 <p>Even though we've not yet discovered a way to escape the template sandbox, we've made some headway in determining the impact of SSTI in the Flask/Jinja2 development stack. I'm certain that there is some additional digging to do here, and I intend to continue, but I encourage others to dig in and explore as well. I'll update things here if/when I find additional items of interest regarding this research.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

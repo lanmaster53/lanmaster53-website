@@ -89,7 +89,6 @@
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </code></pre></div>
 
-
 <p>Let's break it down.</p>
 <p>Basically, we need to POST multiple forms. In order to do this without user interaction, we need JavaScript. Nothing new at this point. Where it gets tricky is that upon submitting a form via POST, whether we use JavaScript or a Submit button, the user will be taken to the resulting content. In the case that we need to submit multiple forms, this will prevent any form but the first from submitting. That's a show stopper. The idea here is that we want to use JavaScript to submit all of the forms necessary to carry out the attack without leaving the current page.</p>
 <p>In the template code scenario we need to submit two forms to carry out the attack, so we place 2 forms on the page: "csrfForm1" and "csrfForm2". The inputs in the template are blank, but this is where you would put each of the parameters required for the form. Inputs with a type of "hidden" will be most effective. Also, there's no need for a "submit" input type, as we will be using JavaScript to do so.</p>
@@ -101,7 +100,6 @@
 <span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </code></pre></div>
-
 
 <p>As the above frame busting JavaScript hijacks the top window, it triggers the top window's "unload" event. Ethan discovered that he could use the "onbeforeunload" event in the top window to ask the user if they wanted to stay on the page. If the user elected to stay, then the unloading of the page would halt, the application would to load in the frame as normal, and the next form would POST. I don't know about you, but when I'm on a page that all the sudden tries to redirect somewhere else, I click the "Stay on this page" button. The result of Ethan's counter-countermeasure is that the attack will ask the user to stay on the page for each form that POSTs through an iframe whose target application is protected by the frame busting JavaScript. As long as the user clicks "Stay on this page", the attack resumes. Pretty handy stuff.</p>
 <p>And that, my friends, is how we do multi-POST CSRF at <a href="http://www.blackhillsinfosec.com">Black Hills Information Security </a>. Enjoy the template and please share your success stories and improvements with us.</p>
@@ -118,7 +116,7 @@
 </li>
 </ul>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

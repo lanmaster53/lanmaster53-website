@@ -59,16 +59,14 @@
 <span class="p">}</span>
 </code></pre></div>
 
-
 <p>This code saves the original <code>alert</code> function as <code>_alert</code>. The code then creates a new <code>alert</code> function. The new <code>alert</code> function does anything we want whenever the browser calls it, and then initiates the original behavior by calling <code>_alert</code>. Since the <code>alert</code> function usually indicates malicious behavior, this gives us an opportunity to detect an attack, and in the case of active defense, respond with some action of our own. Let's expand on the above code to do something interesting.</p>
 <div class="codehilite"><pre><span></span><code><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
 <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+    <span class="nx">img</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Image</span><span class="p">();</span>
     <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&quot;https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/HTML&quot;</span><span class="p">;</span>
     <span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
-
 
 <p>The added code is a HoneyBadger HTML agent using a JavaScript image object. The cool thing about creating an image this way is that browsers immediately fire off the request for the <code>src</code> as soon as it is set, and the image never has to be added to the DOM. This means there is no visual evidence of attack in the user interface. As it stands right now, there are a variety of agents that we could place in our fake <code>alert</code> function, i.e. HTML, JavaScript (HTML5), Java Applet, etc., but you can literally do anything you'd like. Pretty cool, right?</p>
 <p>Beyond overwriting the <code>alert</code> function, there are a few other XSS specific HoneyBadger agents that I've come up with recently: Content-Security-Policy and XSS-Protection. Both of these agents incorporate reporting functionality for debugging issues during the implementation process. However, defenders can use the reporting functionality built into these mechanisms to report back to say... a HoneyBadger server.</p>
@@ -77,16 +75,14 @@
 Content-Security-Policy-Report-Only: &lt;policy&gt;; report-uri https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/Content-Security-Policy
 </code></pre></div>
 
-
 <p>The <code>X-XSS-Protection</code> header disables the browser-side XSS protection before the Content Security Policy is configured. This is because browser-side XSS protection will trigger before the Content Security Policy and prevent the agent from working.</p>
 <p>The XSS-Protection agent reports any time the built-in browser XSS protection mechanism triggers, which indicates the presence of a known XSS attack. The following header creates the XSS-Protection agent:</p>
 <div class="codehilite"><pre><span></span><code>X-XSS-Protection: 1; report=https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/XSS-Protection
 </code></pre></div>
 
-
 <p>These agents cannot be used together. Using them together will only allow the XSS-Protection agent to trigger, as described above. I recommend the Content-Security-Policy agent for any environment that already has it implemented, and the XSS-Protection agent for those that don't. However, be mindful that the headers these agents use are only supported by some browsers. To see the Content-Security-Policy agent in action, check out a target demo page on any deployed HoneyBadger instance.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

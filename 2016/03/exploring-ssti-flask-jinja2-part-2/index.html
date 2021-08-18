@@ -53,7 +53,6 @@
 <h3>The Nudge</h3>
 <p>In response to the initial article, <a href="https://twitter.com/_qll_">Nicolas G</a> published the following tweet.</p>
 <blockquote class="twitter-tweet tw-align-center" data-conversation="none" lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/LaNMaSteR53">@LaNMaSteR53</a> <a href="https://twitter.com/albinowax">@albinowax</a> <a href="https://twitter.com/garethheyes">@garethheyes</a> {{&#39;&#39;.__class__.mro()[1].__subclasses__()[46](&#39;touch /tmp/rce&#39;,shell=True)}} (may be version-dependent)</p>&mdash; Nicolas G (@_qll_) <a href="https://twitter.com/_qll_/status/707714873774448640">March 9, 2016</a></blockquote>
-
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>If you play with this payload a bit, you'll quickly notice that it doesn't work. There are several good reasons for that, which I'll get to shortly. The key takeaway, however, is that this payload uses several very important introspection utilities that we left out in our previous research: the <code>__mro__</code> and <code>__subclasses__</code> attributes.</p>
@@ -107,7 +106,6 @@
         <span class="k">return</span> <span class="kc">True</span>
 </code></pre></div>
 
-
 <p>There's a couple of interesting things here. The most obvious is the use of the <code>compile</code> function against the contents of a file whose path is provided as a parameter. This would come in handy if we had a way to write files to the operating system, no? Well, as we just discussed, we do! We can use the aforementioned <code>file</code> class to not only read files, but write them to world writeable locations on the target server. Then, we can call the <code>from_pyfile</code> method through the SSTI vulnerability to compile the file and execute the contents. This is a 2 staged attack. First, inject something like <code>{{ ''.__class__.__mro__[2].__subclasses__()[40]('/tmp/owned.cfg', 'w').write('&lt;malicious code here&gt;'') }}</code> into the SSTI vulnerability. Then, invoke the compilation process by injecting <code>{{ config.from_pyfile('/tmp/owned.cfg') }}</code>. The code will execute upon compilation. Remote Code Execution achieved.</p>
 <p>But let's take it a step even further. While running code is great and all, having to go through a multi-step process for each block of code we want to run is tedious. Let's leverage the <code>from_pyfile</code> method for its intended purpose and add something useful to the <code>config</code> object. Inject <code>{{ ''.__class__.__mro__[2].__subclasses__()[40]('/tmp/owned.cfg', 'w').write('from subprocess import check_output\n\nRUNCMD = check_output\n') }}</code> into the SSTI vulnerability. This will write a file to the remote server that, when compiled, imports the <code>check_output</code> method of the <code>subprocess</code> module and sets it to a variable named <code>RUNCMD</code>, which, if you recall from the previous article, will get added to the Flask <code>config</code> object virtue of it being an attribute with an upper case name.</p>
 <p><a href="/static/images/posts/ssti_flask_p2_4.png"><img alt="" src="/static/images/posts/ssti_flask_p2_4.png" /></a></p>
@@ -120,7 +118,7 @@
 <h3>Conclusion</h3>
 <p>We can now close the book on escaping the Flask/Jinja2 template sandbox and conclude that the impact of SSTI in Flask/Jinja2 environments is substantial. I'd also like to point out that this is largely the result of the way Python works, and not so much the fault of the Flask framework. I'd be willing to bet that all of the Python MVC/MTV web frameworks suffer from similar exploitation vectors. Ultimately, it is up to the developers using these frameworks to properly follow template design best practices and ensure that their applications do not blindly trust user-supplied data.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

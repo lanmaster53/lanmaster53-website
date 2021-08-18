@@ -63,7 +63,6 @@ sudo apt-get install screen
 screen
 </code></pre></div>
 
-
 <p>I then proceeded to install Pianobar manually using the following steps.</p>
 <div class="codehilite"><pre><span></span><code># install dependencies
 sudo apt-get install git libao-dev libgcrypt11-dev libgnutls-dev libfaad-dev libmad0-dev libjson0-dev make pkg-config
@@ -87,7 +86,6 @@ sudo nano /usr/share/alsa/alsa.conf
 # pcm.front cards.pcm.front =&gt; pcm.front cards.pcm.default
 </code></pre></div>
 
-
 <p>I used the following resource to configure Pianobar.</p>
 <ul>
 <li><a href="http://raspberrypiserver.no-ip.org/pianobar_pandora_remote_control.html#install">http://raspberrypiserver.no-ip.org/pianobar_pandora_remote_control.html#install</a></li>
@@ -95,7 +93,6 @@ sudo nano /usr/share/alsa/alsa.conf
 <p>Notice the TLS fingerprint directive in the configuration file. For whatever reason, it is critical. If it is not correct, Pianobar will throw TLS errors and will not function. If I encounter TLS errors, the first thing I do is use the following command and check to see if Pandora has changed their TLS signature.</p>
 <div class="codehilite"><pre><span></span><code>openssl s_client -connect tuner.pandora.com:443 &lt; /dev/null 2&gt; /dev/null | openssl x509 -noout -fingerprint | tr -d &#39;:&#39; | cut -d&#39;=&#39; -f2
 </code></pre></div>
-
 
 <p>If you didn't already notice, the previous link was actually the walkthrough to configuring the Android client for Pianobar. This is what I use to control Pianobar on my Raspberry Pi, but it isn't required. However, the configuration example still applies, with the exception of the "eventcommand" directive.</p>
 <p>The Pianobar remote is only available for Android, so it doesn't work when I want to control music from my Macbook, iPad, or wife's iPhone. Therefore, I use an open source implementation of Airplay called ShairPort to enable Airplay streaming to my Raspberry Pi. Below is a good resource for configuring ShairPort on a Raspberry Pi.</p>
@@ -124,7 +121,6 @@ sudo nano shairport
 sudo reboot
 </code></pre></div>
 
-
 <p>The Raspberry Pi audio sounded pretty terrible in its default configuration, so I used the <code>alsamixer</code> tool to tune the sound. I've found that a setting of 78 sounds really well with my system and allows me to elevate the volume to a reasonably high level before distortion occurs.</p>
 <p>Let it be known that Raspberry Pis do not handle power outages well. After countless hours of troubleshooting and rebuilding due to power outage induced corruption, I finally got smart and decided it was time to make an image of a complete install for recovery purposes. Below is the process for doing so on OSX.</p>
 <div class="codehilite"><pre><span></span><code># gracefully shutdown the RPi
@@ -136,10 +132,9 @@ diskutil list
 sudo dd if=/dev/rdisk2 of=backup.img bs=1m
 </code></pre></div>
 
-
 <p>So there you have it. Whew.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

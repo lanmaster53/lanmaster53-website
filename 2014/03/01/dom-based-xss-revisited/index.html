@@ -78,7 +78,6 @@
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </code></pre></div>
 
-
 <p>In the example above, the developer uses JavaScript to retrieve the value of the current page URL from the <code>document.location.href</code> DOM attribute and assigns it to a variable named <code>loc</code>. The developer then modifies the DOM and sets the <code>innerHTML</code> value of a <code>span</code> element to the value of the <code>loc</code> variable. The URL can now be used to inject malicious client-side code into the page via D-XSS.</p>
 <p>Similar techniques are often used to parse parameter values from the URL and update the client UI for applications that make few synchronous requests to the server due to the use of AJAX. In years past, this behavior made it quite simple to set the parameter value to valid HTML content that would be parsed and added to the page, leading to exploitable D-XSS flaws. Exploiting these D-XSS flaws was as easy as injecting a <code>&lt;script&gt;</code> HTML element into the parsed parameter's value. Consider the following example code and exploit.</p>
 <ul>
@@ -91,20 +90,17 @@
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </code></pre></div>
 
-
 <ul>
 <li>Exploit</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>http://example.com?name=&lt;script&gt;alert(42)&lt;/script&gt;
 </code></pre></div>
 
-
 <ul>
 <li>Result</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>Hello <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mf">42</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>!
 </code></pre></div>
-
 
 <p>In the example above, the developer uses JavaScript to retrieve the value of the "name" parameter from the <code>document.URL</code> DOM attribute. The developer then writes the parameter value directly to the page as part of a greeting. The "name" parameter and anything appearing after it in the URL can now be used to inject malicious client-side code into the page via D-XSS.</p>
 <p>Modern day browsers have begun protecting users and developers from this type of vulnerability by encoding DOM objects that contain input from the client. However, developers still desire the ability to parse DOM objects to create dynamic client-side content. Given the current browser controls, if the parameter value includes anything but valid URL characters, the value is URL encoded, giving developers URL encoded strings to work with rather than unencoded plain text. To compensate, developers decode these values with the <code>unescape</code> or <code>decodeURIComponent</code> JavaScript functions. By decoding the URL encoded values from the DOM, developers reverse the defenses that browsers have employed and reintroduce the potential for D-XSS. But this is not always the case. Sometimes developers only expect to parse one word strings without URL restricted characters. In this case, decoding is not necessary. This leaves the browsers built-in defenses in place and makes D-XSS nearly impossible to exploit. I say "nearly", because some browsers don't protect applications from D-XSS as well as others. But before we get into that, let's talk about the hash (#) character.</p>
@@ -119,20 +115,17 @@
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </code></pre></div>
 
-
 <ul>
 <li>Exploit</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>http://example.com?name=Tim#&lt;script&gt;alert(42)&lt;/script&gt;
 </code></pre></div>
 
-
 <ul>
 <li>Result</li>
 </ul>
 <div class="codehilite"><pre><span></span><code>Hello Tim#<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mf">42</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>!
 </code></pre></div>
-
 
 <p>In this example, the parameter value of <code>Tim</code> is still sent to the server, but <code>Tim#&lt;script&gt;alert(42)&lt;/script&gt;</code> is parsed from the <code>document.URL</code> DOM attribute and added to the HTML of the page, exposing the target to the payload. This exploit bypasses any server-side mitigation to D-XSS.</p>
 <p>The second impact that the hash character has on D-XSS is that not all browsers treat URIs and URI fragments the same way. I tested Internet Explorer 11, Chrome v33, and Firefox v27 by using the above vulnerable code snippets and the following exploit payload: <code>?&lt;b&gt;Tim&lt;/b&gt;=&lt;b&gt;Tim&lt;/b&gt;#&lt;b&gt;Tim&lt;/b&gt;</code> This payload tests for encoding in the parameter name, parameter value, and URI fragment sections of the URL. My testing yielded the following results:</p>
@@ -150,7 +143,7 @@
 <p><a href="/static/images/posts/d-xss_firefox.png"><img alt="" src="/static/images/posts/d-xss_firefox.png" /></a></p>
 <p>Therefore, if our target is using Chrome or Internet Explorer, we can use the hash character to inject D-XSS payloads without requiring the developer to decode the injectable parameter value prior to updating the DOM, all while bypassing server-side mitigations.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>

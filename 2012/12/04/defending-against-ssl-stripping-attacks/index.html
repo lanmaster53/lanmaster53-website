@@ -62,16 +62,14 @@
 <span class="p">}</span>
 </code></pre></div>
 
-
 <p>Let's walk through the code.</p>
 <p>Line 1 creates a variable called "proto" which has a string value of "https". The reason we create the string this way is to avoid where SSL Stripping tools search and replace all instances of "https" with "http". SSL Stripping tools could add this to the search and replace, but think of how many different ways we can create and obfuscate JavaScript code to create a string equal to "https". Actually, it's limitless. Consider the following JavaScript:</p>
 <div class="codehilite"><pre><span></span><code><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mf">105</span><span class="o">-</span><span class="mf">1</span><span class="p">,</span><span class="mf">114</span><span class="o">+</span><span class="mf">2</span><span class="p">,</span><span class="mf">118</span><span class="o">-</span><span class="mf">2</span><span class="p">,</span><span class="mf">110</span><span class="o">+</span><span class="mf">2</span><span class="p">,</span><span class="mf">118</span><span class="o">-</span><span class="mf">3</span><span class="p">,</span><span class="mf">55</span><span class="o">+</span><span class="mf">3</span><span class="p">)</span>
 </code></pre></div>
 
-
 <p>This creates the string "https". As long as we're dealing with math, we have unlimited possibilities. Line 2 checks to see whether the protocol of the current location of the DOM is "https". If it is not, then line 3 redirects the client to the "https" version of the page. Since the decision is being made on the client side, SSL Stripping tools do not have the opportunity to hijack the redirect from the server, and SSL Stripping is averted.</p>
 </div>
-<p>Like what you see? Join me for live training! See the <a href="/training/">Training</a> page for more information.</p>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
 <hr>
 <div class="comments">
     <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
