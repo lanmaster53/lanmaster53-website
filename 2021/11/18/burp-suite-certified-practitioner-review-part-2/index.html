@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>lanmaster53.com</title>
+        <meta name="author" content="Tim Tomes">
+        <meta name="description" content="Articles, information, and projects related to development and web application security.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" type="text/css">
+        <link rel="stylesheet" href="/static/css/normalize.css">
+        <link rel="stylesheet" href="/static/css/skeleton.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/pygments.css">
+        <link rel="shortcut icon" href="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=16" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="four columns meta">
+                    <ul>
+                        <li><a href="/"><img src="https://www.gravatar.com/avatar/0a6d9b1ad59ad436bf9d9d16b2a7133e.png?s=128" class="avatar" /></a></li>
+                                            <li><a href="https://bitbucket.org/lanmaster53" target="_blank"><img src="/static/images/meta/bitbucket.png" /></a></li>
+                                            <li><a href="https://github.com/lanmaster53" target="_blank"><img src="/static/images/meta/github.png" /></a></li>
+                                            <li><a href="https://twitter.com/lanmaster53" target="_blank"><img src="/static/images/meta/twitter.png" /></a></li>
+                                            <li><a href="https://www.linkedin.com/in/lanmaster53" target="_blank"><img src="/static/images/meta/linkedin.png" /></a></li>
+                                            <li><a href="https://www.youtube.com/user/lanmaster53" target="_blank"><img src="/static/images/meta/youtube.png" /></a></li>
+                                        </ul>
+                </div>
+                <div class="eight columns nav">
+                    <ul>
+                        <li><a href="https://www.practisec.com/"><span style="font-weight: bold; color: #00b5ef;">Practi</span><span style="font-weight: bold; color: #1e1b1d;">Sec</span></a> | </li>
+                                            <li><a href="/projects/">Projects</a> | </li>
+                                            <li><a href="/archive/">Archive</a> | </li>
+                                            <li><a href="/categories/">Categories</a> | </li>
+                                            <li><a href="/about/">About</a></li>
+                                        </ul>
+                </div>
+            </div>
+            <!-- hr style="margin-top: 0;" -->
+            <div class="row">
+                <div class="twelve columns">
+                    <h2>Review: Burp Suite Certified Practitioner (Part 2)</h2>
+<h5>Thursday, November 18, 2021</h5>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <div class="content">
+    <p>With Portswigger slashing the price of their Burp Suite Certified Practitioner exam to $9, I couldn't resist buying an attempt and giving it a try. I spent a couple more days preparing and took the certification exam. I didn't get very far in the three hours, completing only a single challenge (step 1 of application 1), but I did learn a little about the environment and wanted to share some of that information with others that may be considering an attempt at becoming a Burp Suite Certified Practitioner.</p>
+<!-- READMORE -->
+
+<p>If you've not already read <a href="/2021/11/15/burp-suite-certified-practitioner-review/">part one of my review</a>, please do so before continuing. This is not only a continuation of that, but I may have new perspectives based on experiencing the actual certification exam, and it could be helpful seeing how my perspectives have changed. Everything here is in addition to part one of my initial review and the information that Portswigger provides about the certification exam specifically.</p>
+<h3>Targets</h3>
+<p>I've only taken the certification exam once, but I was told by Portswigger personnel and confirmed with someone that has taken the certification exam more than once, that the challenges are randomized each time you take the certification exam. This is so testers can't predictably get the same certification exam every time and "game" the time restriction by picking up where they left off previously (like we all did with the practice exam). This makes the timing issue even more relevant, because now you have to start fresh every time, and can't roll over any previous work. Portswigger wants you to finish the whole thing starting from ground zero in the three hours to prove your ability.</p>
+<p>There are two applications that must be completed, and while you have to do each stage of each application in order (three stages), the applications themselves do NOT have to be done in order. In fact, when I hit a road block on the first application, I hopped over to the second for a change of scenery. While this gives your brain a soft reset, it can also be confusing. The applications have largely the same functionality implemented in different ways and it can become confusing trying to remember which interesting behavior belonged to which application. The fact that each application's host name is a random string of characters doesn't help this either. If you bounce around, find a way to keep track of things.</p>
+<p>I didn't accomplish enough to conclude if there is an intentional increase in difficulty between the two applications, but considering they are randomly selected and everything is supposed to be practitioner level difficulty, I doubt it.</p>
+<p>The applications are not large. They are small and pretty straight forward. However, just because there isn't much content, doesn't mean there isn't much to look for. There are so many lesser understood places Portswigger can hide issues e.g. cache poisoning, request smuggling, CORS implementations, header injection, etc... more on this below. The scanner can help with some of this, but that takes time, even if you are using the selective scanning techniques. In the end, a scanner is a scanner and might not provide you with anything useful, and could waste a bunch of your time with false positives.</p>
+<h3>Difficulty</h3>
+<p>There is nothing vanilla here folks. This thing is hard. Unfortunately, I don't think it is hard for the right reasons, because in my opinion it's not hard in a realistic way. Reality is what we're certifying for, right?</p>
+<p>The exam is all about having a large number of techniques memorized, then figuring out which order to apply them in a short period of time. Let me put it this way. Let's refer to each of the Web Security Academy lab solutions as a technique, or a small collection of techniques that can be divided into individual techniques. The exam presents challenges in such a way that at first glance you are looking at the reincarnation of a lab you've already seen. But things aren't what they seem. You'll soon find out that the underlying issue isn't operating alone. There are other techniques from other labs that will need to be combined with the first technique in order to proceed. Sometimes directly and sometimes indirectly. This presents two problems: a natural increase in difficulty, and a requirement to memorize, recognize, and execute a large number of techniques in a short period of time.</p>
+<p>In my opinion, combining practitioner level techniques in this way does not maintain the practitioner level of difficulty. Similar to how Chris Gates and Rob Fuller use to put it in their LOW to PWNED talks, if you put a couple low risk issues together, it presents a lot more risk. In the same way, if you put a couple practitioner level techniques together, it increases the level of difficulty of the challenge. I would rate much of what I've encountered in the practice and certification exams more on the expert level than the practitioner level. Then again, I've failed the exam, so take my opinion with a grain of salt. I might just be protecting my ego.</p>
+<p>There are 203 total labs in the Web Security Academy. Of the 203 labs, 171 are practitioner level or lower. Therefore, if there is only a single technique per lab, which there are often more, there are at least 171 techniques to have memorized and able to recognize the need for and execute at a moments notice during the certification exam. I don't know about you, but I simply can't do that. I have a terrible memory, so one thing I've forced myself to do is not to memorize everything, but to recognize something and have an easily accessible reference that reminds me of everything I need to recall about the topic. I feel like that's too slow of a process for the certification exam, which is why I performed, and will continue to perform, poorly on it. With 30 minutes per challenge, you don't have time to discover a vulnerability, reference a resource, build an exploit, test the exploit, and troubleshoot the exploit. You need to be able to respond immediately without reviewing references or spending time in trial and error situations. You need the answer and you need it quick. After I failed, Portswigger's guidance was, "We advise spending at least four weeks preparing, before you re-book your Burp Suite Certified: Practitioner exam." I won't remember four weeks from now any more than I can remember right now. I've been doing the labs for the last week and a half and still had to reference the things I did last week. This is not wrong, but it's hard given the time constraint. I convey the message to all of my students that there is a LOT to know in web application security. Your best asset will be your ability to recognize something and manage information in such a way that you are able to find it when you need it. I don't need all 171+ techniques at my disposal all the time. I'll read them from long term storage into short term volatile memory as I need them, and dump everything that isn't necessary for identification between encounters. This approach will not work with the certification exam.</p>
+<p>Finally, the way the issues are incorporated are inconsistent with the flow of the application and don't replicate what solving them is supposed to certify, which is a practitioner's capability against real-world applications. The challenges are convoluted and disjointed puzzles that are designed and implemented in a way that doesn't replicate the normal behavior of a developer. Keep in mind that my normal may be different from someone else's normal, but I've been exclusively testing web applications for a very long time, so I feel like I've got a decent sample set. For example, the challenge may involve a server-side rendered application, but the developer will have shoehorned a client-side "feature" into the application that is completely different from how the rest of the application works. It does make potential issues stand out because you'll be like, "what the heck is that?", but based on my inability to move forward, I have to wonder if this design approach confused how I attempt to reverse engineer a developers thoughts when I'm assessing their code. A real world application, which I will remind you is what we are certifying for, would not normally be this way. There is typically a consistent use of technology and patterns that we can observe and use to make assumptions about where issues are likely to exist. Like CTFs, the certification exam environment feels a bit like a hodgepodge, and that certainly makes for an environment I am not comfortable in. But those that enjoy and excel at solving puzzles and CTFs will likely fit right in here. It certainly feels like that kind of game.</p>
+<h3>Virtual Victim</h3>
+<p>Portswigger's uses an "AI" that operates on the back end like a user to do things like open emails, click links, etc. I don't know what Portswigger calls it, so I'll call it the virtual victim. You'll encounter the virtual victim first when you do the Web Security Academy labs. In the labs, Portswigger will tell you exactly what a button text needs to be, or what the payload should execute in order to be detected by the virtual victim. For example, a lab may require that a button have the text "click me" in order for the virtual victim to trigger a Clickjacking exploit. This information is provided as part of the challenge, not the solution. You have to have the information, because without it, you would have to guess what is required to create a payload that would be detected, and that would just be silly, right? So how does that translate over to the certification exam? It doesn't. There is no guidance for how to properly lure the virtual victim into an exploit. Therefore, the guessing game that you didn't have to do in the labs plays itself out in the certification exam. I operated under the assumption that the certification exam virtual victim looks for the same thing as the lab virtual victim, but the fact that I don't know for sure still makes me uncertain about an exploit that should have worked for me during the certification exam today, but didn't.</p>
+<p>During the certification exam, I observed behavior that would allow me to conduct a two-stage exploit to gain access to what was needed to advance to the next level of the first application. Like I said, the apps are small and there's not much too them, so this had to be it in my mind. There was simply nothing else to do. I built my exploit and tested it against myself. It worked perfectly. When I delivered it to the virtual victim, nothing happened. I exploited myself again to double check and it worked. I sent it to the virtual victim again and nothing happened. I have no idea why it didn't work. Was the button not labeled correctly for the virtual victim to recognize it? Was there some sort of technical explanation for why one user would be vulnerable while another wouldn't? Was I providing a right wrong answer... simply put, not the answer Portswigger expected? I have no idea. I created something out of my own creativity to solve the problem within the context of the tools that Portswigger has given me all along, and it simply didn't work. That is a really frustrating place to be. Especially since I spent so much time putting it together. And in case you haven't caught on, you do not have enough time for a single wrong answer.</p>
+<p>And on the topic of time, it takes a good couple hours of tinkering with the virtual victim to get a feel for how it works and how to integrate it with your exploits. You can do most of this orientation in the labs, but it is an absolute must. The way it works doesn't feel natural. In fact, as I was doing my evening walk tonight, it suddenly hit me that I had the right exploit all along for a different challenge I was working on during the certification exam today (not the one above) but wasn't delivering it properly because of a misunderstanding of how the virtual victim interface worked. Once I got away and wrapped my head around what I was trying to accomplish with the virtual victim interface, I realized I was using it wrong. Something that I will NEVER use or encounter in a real world situation prevented me from moving forward in the certification exam. It is supremely important that you get proficient with this tool, regardless of whether or not it is useful for anything else.</p>
+<h3>Conclusion</h3>
+<p>I said it last time and I'll say it again, the certification exam is for those interested in hard core exploitation. Discovery is not hard here. You will find the spots you need to look at pretty easily, and in some cases, the automated discovery techniques will do it for you. The certification exam demands high-level exploitation skill. If you aren't comfortable in what I would call expert level exploitation and post-exploitation with very little need to reference, you are going to struggle with the certification exam.</p>
+<p>Also, time, time, time. I can't say it enough. There is so little time to accomplish what needs to be done during the certification exam. To reiterate, you have 30 minutes to discover a vulnerability, reference a resource, build an exploit, test the exploit, and troubleshoot the exploit for each of six challenges. You cannot afford a rabbit hole or wrong answer, and you cannot afford to spend much time referencing anything.</p>
+<p>I know this review sounds a bit negative, but I wanted to be transparent about my experience. It was frustrating, and it made me feel inadequate at a profession I have spent countless hours pouring my life in to. There is going to be an emotional response to that, and I felt it. But, I also want to be clear that the certification exam hits on all of my weakest points as an information security practitioner. I don't play in CTFs, and deep exploitation is not something my clients ask me, or sometimes even allow me, to do. I have a thorough methodology that takes time to get through. And as someone that writes a lot of code, I try to get into the mind of the developer and use their patterns and processes to lead me to vulnerabilities. My approach to web application security simply does not serve me well in the certification exam environment. I expect that others' mileage will vary greatly, so please don't let me discourage you from attempting the certification exam.</p>
+<p>As for next steps, I'm going to continue to review the labs and probably try make another attempt or two over the holiday break. If nothing else, at $9 an attempt, I consider it $3 an hour to spend time in an online lab where I can practice a new skill. I'll check back in if anything changes.</p>
+</div>
+<p>Like what you see? Join me for live training! See the <a href="https://www.practisec.com/training/">Training</a> page for more information.</p>
+<hr>
+<div class="comments">
+    <h6>Please share your thoughts, comments, and suggestions via Twitter.</h6>
+    <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-via="">Tweet</a>
+    <a href="http://twitter.com/lanmaster53" class="twitter-follow-button" data-show-count="false">Follow @lanmaster53</a>
+    <script src="https://platform.twitter.com/widgets.js" type="text/javascript"></script>
+</div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="twelve columns">
+                    <footer>
+                        <p style="float: right;">
+                            &copy; 2021 Tim Tomes
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-52269615-1', 'lanmaster53.com');
+    ga('send', 'pageview');
+</script>    </body>
+</html>
