@@ -57,31 +57,31 @@
     <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">script</span> <span class="na">language</span><span class="o">=</span><span class="s">&quot;javascript&quot;</span><span class="p">&gt;</span>
 
-            <span class="nb">window</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-                <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;csrfForm1&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
-                <span class="c1">// to make 2nd form wait for 1st, put the following in a function and use as a callback for a new timer</span>
-                <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;csrfForm2&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
-            <span class="p">}</span>
+<span class="w">            </span><span class="nb">window</span><span class="p">.</span><span class="nx">onload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;csrfForm1&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
+<span class="w">                </span><span class="c1">// to make 2nd form wait for 1st, put the following in a function and use as a callback for a new timer</span>
+<span class="w">                </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;csrfForm2&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
 
-            <span class="c1">// defeat frame busters</span>
-            <span class="nb">window</span><span class="p">.</span><span class="nx">onbeforeunload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-                <span class="k">return</span> <span class="s2">&quot;Please click &#39;Stay on this page&#39; to allow it to finish loading.&quot;</span><span class="p">;</span>
-            <span class="p">}</span>
+<span class="w">            </span><span class="c1">// defeat frame busters</span>
+<span class="w">            </span><span class="nb">window</span><span class="p">.</span><span class="nx">onbeforeunload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;Please click &#39;Stay on this page&#39; to allow it to finish loading.&quot;</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
 
-        <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
     <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
 
         <span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;csrfForm1&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&lt;!--</span> <span class="na">fill</span> <span class="na">in</span> <span class="na">POST</span> <span class="na">URL</span> <span class="na">here</span> <span class="na">--</span><span class="p">&gt;</span> method=&quot;POST&quot; target=&quot;csrfIframe1&quot;&gt;
             <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="p">/&gt;</span>
-            <span class="c">&lt;!-- fill in form data here --&gt;</span>
+            <span class="cm">&lt;!-- fill in form data here --&gt;</span>
         <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
 
         <span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;csrfForm2&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&lt;!--</span> <span class="na">fill</span> <span class="na">in</span> <span class="na">POST</span> <span class="na">URL</span> <span class="na">here</span> <span class="na">--</span><span class="p">&gt;</span> method=&quot;POST&quot; target=&quot;csrfIframe2&quot;&gt;
-            <span class="c">&lt;!-- fill in form data here --&gt;</span>
+            <span class="cm">&lt;!-- fill in form data here --&gt;</span>
         <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
 
-        <span class="c">&lt;!-- hidden iframes --&gt;</span>
+        <span class="cm">&lt;!-- hidden iframes --&gt;</span>
         <span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: hidden&quot;</span> <span class="na">height</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">frameborder</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;csrfIframe1&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">iframe</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: hidden&quot;</span> <span class="na">height</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">frameborder</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;csrfIframe2&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">iframe</span><span class="p">&gt;</span>
 
@@ -95,8 +95,8 @@
 <p>Next, look at the "head" of the template. We write some JavaScript that will submit both forms upon the page loading with the "onload" event. But wait a second. Didn't we just say that we can't submit two forms on one page? Yes, we did. Take another look in the "body" of the template. You'll notice that there are two iframes at the bottom named "csrfIframe1" and "csrfIframe2". Then look at the forms again and notice that their "target" attributes are set for the respective iframes. This is the trick. By submitting the forms within the target of multiple iframes, we maintain control over the primary page and can continue to submit forms on behalf of the target. Totally cool, right? Also, by sizing the iframe to be invisible, the user continues to see the content of the current page unchanged as the attack plays out.</p>
 <p>While this was good enough to solve my problem, Ethan ran into another issue in his situation. His target application had a JavaScript frame busting countermeasure that prevented this attack by hijacking any window that attempted to frame the application. The frame busting JavaScript was similar to this:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span><span class="p">&gt;</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">top</span> <span class="o">!=</span> <span class="nx">self</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">top</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">location</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">top</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">self</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">top</span><span class="p">.</span><span class="nx">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">self</span><span class="p">.</span><span class="nx">location</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </code></pre></div>
@@ -131,7 +131,7 @@
                 <div class="twelve columns">
                     <footer>
                         <p style="float: right;">
-                            &copy; 2022 Tim Tomes
+                            &copy; 2024 Tim Tomes
                         </p>
                     </footer>
                 </div>

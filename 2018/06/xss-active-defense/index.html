@@ -52,19 +52,19 @@
 
 <p>First, the basics. XSS is a client-side code injection issue where the goal is to inject client-side code in such a way that a malicious payload executes in the JavaScript context, regardless of where the payload lands in the page. The bottom line is that the final attack executes as JavaScript. When attempting to discover XSS flaws, an attacker is always going to develop proof-of-concept payloads to validate the issue prior final exploitation. This is a universal methodology. The first active defense technique I want to share preys on this universal behavior.</p>
 <p>The most common proof-of-concept payload used during the discovery process is typically some variation of the <code>alert</code> JavaScript function, regardless of the context. I understand that there are many options with which to conduct a proof-of-concept attack, but this technique applies to all of them and for this demonstration we're going to use <code>alert</code>. Like many other programming/scripting languages like it, we have the ability to overwrite functions in JavaScript. If we know that an attacker is going to use the <code>alert</code> function to create a proof-of-concept while validating XSS on a target application, then the <code>alert</code> function itself becomes an opportunity for detection and action when we apply what we know about JavaScript. Take the following block of code:</p>
-<div class="codehilite"><pre><span></span><code><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
-<span class="nb">window</span><span class="p">.</span><span class="nx">alert</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// report malicious behavior</span>
-    <span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nx">_alert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// report malicious behavior</span>
+<span class="w">    </span><span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
 
 <p>This code saves the original <code>alert</code> function as <code>_alert</code>. The code then creates a new <code>alert</code> function. The new <code>alert</code> function does anything we want whenever the browser calls it, and then initiates the original behavior by calling <code>_alert</code>. Since the <code>alert</code> function usually indicates malicious behavior, this gives us an opportunity to detect an attack, and in the case of active defense, respond with some action of our own. Let's expand on the above code to do something interesting.</p>
-<div class="codehilite"><pre><span></span><code><span class="kd">var</span> <span class="nx">_alert</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
-<span class="nb">window</span><span class="p">.</span><span class="nx">alert</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">img</span> <span class="o">=</span> <span class="ow">new</span> <span class="nx">Image</span><span class="p">();</span>
-    <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">&quot;https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/HTML&quot;</span><span class="p">;</span>
-    <span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+<div class="codehilite"><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nx">_alert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">;</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Image</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">img</span><span class="p">.</span><span class="nx">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;https://&lt;honeybadger host&gt;/api/beacon/&lt;target guid&gt;/HTML&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">_alert</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
 
@@ -97,7 +97,7 @@ Content-Security-Policy-Report-Only: &lt;policy&gt;; report-uri https://&lt;hone
                 <div class="twelve columns">
                     <footer>
                         <p style="float: right;">
-                            &copy; 2022 Tim Tomes
+                            &copy; 2024 Tim Tomes
                         </p>
                     </footer>
                 </div>

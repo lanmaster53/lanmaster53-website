@@ -117,7 +117,7 @@
 <p>And don't think that storing these configuration items in environment variables protects against this disclosure. The <code>config</code> object contains all of the configuration values AFTER they have been resolved by the framework.</p>
 <p>Our most interesting discovery also comes from introspecting the <code>config</code> object. While the <code>config</code> object is dictionary-like, it is a subclass that contains several unique methods: <code>from_envvar</code>, <code>from_object</code>, <code>from_pyfile</code>, and <code>root_path</code>. Finally, an opportunity to dig into source code. Below is the code for the <code>from_object</code> method of the <code>Config</code> class, <code>flask/config.py</code>.</p>
 <div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Updates the values from the given object.  An object can be of one</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values from the given object.  An object can be of one</span>
 <span class="sd">        of the following two types:</span>
 
 <span class="sd">        -   a string: in this case the object with that name will be imported</span>
@@ -151,7 +151,7 @@
 
 <p>We see here that if we pass a string object to the <code>from_object</code> method, it passes the string to <code>import_string</code> method from the <code>werkzeug/utils.py</code> module, which attempts to import anything from the path whose name matches and return it.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">import_string</span><span class="p">(</span><span class="n">import_name</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Imports an object based on a string.  This is useful if you want to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Imports an object based on a string.  This is useful if you want to</span>
 <span class="sd">    use import paths as endpoints or something similar.  An import path can</span>
 <span class="sd">    be specified either in dotted notation (``xml.sax.saxutils.escape``)</span>
 <span class="sd">    or with a colon as object delimiter (``xml.sax.saxutils:escape``).</span>
@@ -330,7 +330,7 @@
                 <div class="twelve columns">
                     <footer>
                         <p style="float: right;">
-                            &copy; 2022 Tim Tomes
+                            &copy; 2024 Tim Tomes
                         </p>
                     </footer>
                 </div>

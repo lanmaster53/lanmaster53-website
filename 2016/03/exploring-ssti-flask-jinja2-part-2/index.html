@@ -78,7 +78,7 @@
 <p>So, we've now demonstrated that arbirtrary file access is possible via SSTI in Flask/Jinja2, but we're not done yet. My goal in this was Remote Code/Command Execution.</p>
 <p>The previous article referenced several methods of the <code>config</code> object that load objects into the Flask configuration environment. One such method was the <code>from_pyfile</code> method. Below is the code for the <code>from_pyfile</code> method of the <code>Config</code> class, <code>flask/config.py</code>.</p>
 <div class="codehilite"><pre><span></span><code>    <span class="k">def</span> <span class="nf">from_pyfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Updates the values in the config from a Python file.  This function</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the values in the config from a Python file.  This function</span>
 <span class="sd">        behaves as if the file was imported as module with the</span>
 <span class="sd">        :meth:`from_object` function.</span>
 
@@ -133,7 +133,7 @@
                 <div class="twelve columns">
                     <footer>
                         <p style="float: right;">
-                            &copy; 2022 Tim Tomes
+                            &copy; 2024 Tim Tomes
                         </p>
                     </footer>
                 </div>
